@@ -188,7 +188,7 @@ push.
 language will be used?**
 
 The documentation is available on
-https://fschwar4.github.io/pynamicgain/. It is publicly available and
+https://goecidbn.github.io/pynamicgain/. It is publicly available and
 written in English.
 
 ### Testing
@@ -280,7 +280,7 @@ Not yet. Maybe in the future.
 **Do you intend to make your software management plan publicly available
 (later)?**
 
-Yes: https://fschwar4.github.io/pynamicgain/explanations/SMPR.html
+Yes: https://goecidbn.github.io/pynamicgain/explanations/SMPR.html
 
 ## Legal and Ethics
 
