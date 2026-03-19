@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=f7cdbf68"></script>
+    <script src="../_static/documentation_options.js?v=a83ce22a"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_apidoc/pynamicgain';</script>
@@ -49,7 +49,7 @@
     <link rel="search" title="Search" href="../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.0.9" />
+  <meta name="docsearch:version" content="0.0.10" />
   </head>
   
   
@@ -206,7 +206,7 @@
 
 
 <div class="version">
-  <strong>Version:</strong> 0.0.9
+  <strong>Version:</strong> 0.0.10
 </div>
 </div>
       
@@ -334,7 +334,7 @@
 
 
 <div class="version">
-  <strong>Version:</strong> 0.0.9
+  <strong>Version:</strong> 0.0.10
 </div>
 </div>
         
@@ -490,17 +490,720 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">#</a></h2>
 </section>
-<section id="pynamicgain-analysis-module">
-<h2>pynamicgain.analysis module<a class="headerlink" href="#pynamicgain-analysis-module" title="Link to this heading">#</a></h2>
+<section id="module-pynamicgain.analysis">
+<span id="pynamicgain-analysis-module"></span><h2>pynamicgain.analysis module<a class="headerlink" href="#module-pynamicgain.analysis" title="Link to this heading">#</a></h2>
+<p>Module for on-the-fly analysis of newly generated data.</p>
+<p>Currently this is a super simple peak finding and subsequent spike train analysis.
+However, this can be extended to more complex analysis in the future.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pynamicgain.analysis.get_analysis_function">
+<span class="sig-prename descclassname"><span class="pre">pynamicgain.analysis.</span></span><span class="sig-name descname"><span class="pre">get_analysis_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">what</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mini_sta'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynamicgain.analysis.get_analysis_function" title="Link to this definition">#</a></dt>
+<dd><p>Return the analysis function matching the given type name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>what</strong> – Analysis type identifier. Defaults to <code class="docutils literal notranslate"><span class="pre">'mini_sta'</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The callable analysis function.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">what</span></code> is not a recognised analysis type.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pynamicgain.analysis.set_analysis_parameters">
+<span class="sig-prename descclassname"><span class="pre">pynamicgain.analysis.</span></span><span class="sig-name descname"><span class="pre">set_analysis_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">what</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mini_sta'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynamicgain.analysis.set_analysis_parameters" title="Link to this definition">#</a></dt>
+<dd><p>Extract and normalise parameters for the specified analysis type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>what</strong> – Analysis type identifier. Defaults to <code class="docutils literal notranslate"><span class="pre">'mini_sta'</span></code>.</p></li>
+<li><p><strong>**kwargs</strong> – Must contain <code class="docutils literal notranslate"><span class="pre">analysis</span></code> and <code class="docutils literal notranslate"><span class="pre">sampling_rate</span></code> keys.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary of keyword arguments for the analysis function.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">what</span></code> is not a recognised analysis type.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pynamicgain.analysis.minimal_spike_train_analysis">
+<span class="sig-prename descclassname"><span class="pre">pynamicgain.analysis.</span></span><span class="sig-name descname"><span class="pre">minimal_spike_train_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sweep_trace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refractory_period</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_spike_height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_spike_distance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sweep_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visualise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynamicgain.analysis.minimal_spike_train_analysis" title="Link to this definition">#</a></dt>
+<dd><p>Perform a minimal spike train analysis on patch clamp data.</p>
+<p>Detects spikes via <code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.find_peaks()</span></code>, then computes
+mean firing rate (MFR), coefficient of variation (CV) and local
+variation ratio (LvR). Does not handle any I/O operations.</p>
+<p>CV and LvR adapted from
+<a class="reference external" href="https://gist.github.com/fschwar4/8e9044273716cfea5a76653daeb0d170">https://gist.github.com/fschwar4/8e9044273716cfea5a76653daeb0d170</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">figure</span></code></span></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>x_time</strong> – Time array in seconds.</p></li>
+<li><p><strong>sweep_trace</strong> – Voltage trace in mV.</p></li>
+<li><p><strong>refractory_period</strong> – Refractory period for the LvR calculation
+in seconds.</p></li>
+<li><p><strong>min_spike_height</strong> – Minimum spike height for peak detection in mV.</p></li>
+<li><p><strong>min_spike_distance</strong> – Minimum distance between spikes in samples.</p></li>
+<li><p><strong>sampling_rate</strong> – Sampling rate in Hz.</p></li>
+<li><p><strong>sweep_number</strong> – Index of the sweep being analysed.</p></li>
+<li><p><strong>visualise</strong> – Whether to create a 3-panel figure with trace,
+ISI histogram and spike snippets. Defaults to False.</p></li>
+<li><p><strong>**kwargs</strong> – Additional visualisation parameters (e.g.
+<code class="docutils literal notranslate"><span class="pre">trace_start</span></code>, <code class="docutils literal notranslate"><span class="pre">trace_duration</span></code>, <code class="docutils literal notranslate"><span class="pre">isi_bin_max</span></code>,
+<code class="docutils literal notranslate"><span class="pre">isi_bin_width</span></code>, <code class="docutils literal notranslate"><span class="pre">interval_before_peak</span></code>,
+<code class="docutils literal notranslate"><span class="pre">interval_after_peak</span></code>, <code class="docutils literal notranslate"><span class="pre">snippet_ylim</span></code>).</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A matplotlib Figure if <code class="docutils literal notranslate"><span class="pre">visualise</span></code> is True, otherwise None.</p>
+</dd>
+<dt class="field-even">Warns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>UserWarning</strong> – When fewer than 3 spikes are detected, as some
+metrics cannot be computed.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="pynamicgain-new-setup-module">
-<h2>pynamicgain.new_setup module<a class="headerlink" href="#pynamicgain-new-setup-module" title="Link to this heading">#</a></h2>
+<section id="module-pynamicgain.new_setup">
+<span id="pynamicgain-new-setup-module"></span><h2>pynamicgain.new_setup module<a class="headerlink" href="#module-pynamicgain.new_setup" title="Link to this heading">#</a></h2>
+<p>Module to generate a new setup configuration file.</p>
+<p>Please run this script to generate a new setup configuration file.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pynamicgain.new_setup.ask_set_input">
+<span class="sig-prename descclassname"><span class="pre">pynamicgain.new_setup.</span></span><span class="sig-name descname"><span class="pre">ask_set_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">question</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_assert</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynamicgain.new_setup.ask_set_input" title="Link to this definition">#</a></dt>
+<dd><p>Prompt the user with a yes/no question and optionally collect input.</p>
+<p>If the user answers <em>yes</em>, they are asked for a value that is
+validated with <code class="docutils literal notranslate"><span class="pre">_assert</span></code>. Up to 5 invalid attempts are allowed
+before raising an error.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>question</strong> – The yes/no question to display.</p></li>
+<li><p><strong>prompt</strong> – The follow-up prompt for the actual value.</p></li>
+<li><p><strong>_assert</strong> – Optional validation callable. Receives the stripped
+user input and should return True if valid.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The validated user input string, or None if the user answered
+<em>no</em>.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – If the maximum number of invalid attempts is
+    reached.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pynamicgain.new_setup.initiate_new_setup">
+<span class="sig-prename descclassname"><span class="pre">pynamicgain.new_setup.</span></span><span class="sig-name descname"><span class="pre">initiate_new_setup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pynamicgain.new_setup.initiate_new_setup" title="Link to this definition">#</a></dt>
+<dd><p>Interactively create a new setup configuration file for DG on pClamp.</p>
+<p>Prompts the user for:</p>
+<ul class="simple">
+<li><p><strong>setup id</strong> – positive integer (coordinate with your team first).</p></li>
+<li><p><strong>setup description</strong> – short free-text description.</p></li>
+<li><p><strong>setup creator</strong> – your name.</p></li>
+<li><p><strong>output path</strong> – where <code class="docutils literal notranslate"><span class="pre">.abf</span></code> files will be saved (optional).</p></li>
+<li><p><strong>input path</strong> – where patch clamp recordings are stored (optional).</p></li>
+<li><p><strong>sampling rate</strong>, <strong>n_sweeps</strong>, <strong>duration</strong> – recording parameters
+(optional, stored as defaults).</p></li>
+<li><p><strong>save path</strong> – where the configuration file will be written.</p></li>
+</ul>
+<p>The generated TOML configuration file and a companion seed-list CSV
+are written to the specified save path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>AssertionError</strong> – If the setup id, description, creator, or save
+    path are invalid.</p></li>
+<li><p><strong>FileExistsError</strong> – If a configuration file for the given setup id
+    already exists at the save path.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="pynamicgain-stimulus-generation-module">
-<h2>pynamicgain.stimulus_generation module<a class="headerlink" href="#pynamicgain-stimulus-generation-module" title="Link to this heading">#</a></h2>
+<section id="module-pynamicgain.stimulus_generation">
+<span id="pynamicgain-stimulus-generation-module"></span><h2>pynamicgain.stimulus_generation module<a class="headerlink" href="#module-pynamicgain.stimulus_generation" title="Link to this heading">#</a></h2>
+<p>Module to generate the input for the dynamic gain calculations.</p>
+<p>Currently the input is generated as an OU process with a given correlation time and standard deviation.</p>
+<p>In the future, this can be extended to more complex input signals.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pynamicgain.stimulus_generation.generate_input">
+<span class="sig-prename descclassname"><span class="pre">pynamicgain.stimulus_generation.</span></span><span class="sig-name descname"><span class="pre">generate_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'OU'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynamicgain.stimulus_generation.generate_input" title="Link to this definition">#</a></dt>
+<dd><p>Generate an input signal for the dynamic gain calculation.</p>
+<p>Currently only the Ornstein-Uhlenbeck (OU) process is implemented.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code>]]</span></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>type</strong> – The type of input to generate. Defaults to <code class="docutils literal notranslate"><span class="pre">'OU'</span></code>.</p></li>
+<li><p><strong>**kwargs</strong> – Forwarded to <a class="reference internal" href="#pynamicgain.stimulus_generation.create_input_dict" title="pynamicgain.stimulus_generation.create_input_dict"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_input_dict()</span></code></a> for parameter
+extraction.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The generated input signal as a 1-D array.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">type</span></code> is not a recognised input type.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pynamicgain.stimulus_generation.create_input_dict">
+<span class="sig-prename descclassname"><span class="pre">pynamicgain.stimulus_generation.</span></span><span class="sig-name descname"><span class="pre">create_input_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'OU'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynamicgain.stimulus_generation.create_input_dict" title="Link to this definition">#</a></dt>
+<dd><p>Extract and normalise parameters for input generation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>type</strong> – The type of input to generate. Defaults to <code class="docutils literal notranslate"><span class="pre">'OU'</span></code>.</p></li>
+<li><p><strong>**kwargs</strong> – Must contain <code class="docutils literal notranslate"><span class="pre">duration</span></code>, <code class="docutils literal notranslate"><span class="pre">sampling_rate</span></code>,
+<code class="docutils literal notranslate"><span class="pre">stimulus</span></code>, <code class="docutils literal notranslate"><span class="pre">std</span></code>, <code class="docutils literal notranslate"><span class="pre">corr_t</span></code>, and <code class="docutils literal notranslate"><span class="pre">key</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary of keyword arguments for the generator function.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">type</span></code> is not a recognised input type.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pynamicgain.stimulus_generation.create_filename">
+<span class="sig-prename descclassname"><span class="pre">pynamicgain.stimulus_generation.</span></span><span class="sig-name descname"><span class="pre">create_filename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'OU'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynamicgain.stimulus_generation.create_filename" title="Link to this definition">#</a></dt>
+<dd><p>Build a standardised filename for the input ABF file.</p>
+<p>The filename encodes the input type and key parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>type</strong> – The type of input to generate. Defaults to <code class="docutils literal notranslate"><span class="pre">'OU'</span></code>.</p></li>
+<li><p><strong>**kwargs</strong> – Must contain <code class="docutils literal notranslate"><span class="pre">corr_t</span></code> and <code class="docutils literal notranslate"><span class="pre">n_sweeps</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The generated filename string (e.g. <code class="docutils literal notranslate"><span class="pre">OU_5ms_10sweeps.abf</span></code>).</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">type</span></code> is not a recognised input type.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pynamicgain.stimulus_generation.inner_exact">
+<span class="sig-prename descclassname"><span class="pre">pynamicgain.stimulus_generation.</span></span><span class="sig-name descname"><span class="pre">inner_exact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_kappa</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynamicgain.stimulus_generation.inner_exact" title="Link to this definition">#</a></dt>
+<dd><p>Compute the exact OU-process solution step-by-step (Numba JIT).</p>
+<p>Applies the recursive relation in-place on <code class="docutils literal notranslate"><span class="pre">eta</span></code>, then adds the
+mean <code class="docutils literal notranslate"><span class="pre">mu</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>eta</strong> – Pre-allocated noise vector (modified in-place).</p></li>
+<li><p><strong>mu</strong> – Mean of the OU process.</p></li>
+<li><p><strong>_kappa</strong> – Decay parameter <code class="docutils literal notranslate"><span class="pre">exp(-dt</span> <span class="pre">/</span> <span class="pre">tau)</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The completed OU trace (<code class="docutils literal notranslate"><span class="pre">eta</span> <span class="pre">+</span> <span class="pre">mu</span></code>, same array).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pynamicgain.stimulus_generation.exact_ou_process">
+<span class="sig-prename descclassname"><span class="pre">pynamicgain.stimulus_generation.</span></span><span class="sig-name descname"><span class="pre">exact_ou_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">duration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fluctuation_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_correlation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynamicgain.stimulus_generation.exact_ou_process" title="Link to this definition">#</a></dt>
+<dd><p>Generate an Ornstein-Uhlenbeck process.</p>
+<p>Numba-accelerated implementation based on Gillespie 1996 (Phys Rev E).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code>]]</span></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>duration</strong> – Duration of the simulation in seconds.</p></li>
+<li><p><strong>dt</strong> – Duration of one time step of the simulation in seconds.</p></li>
+<li><p><strong>mu</strong> – Average input strength (mean of the OU process).</p></li>
+<li><p><strong>fluctuation_size</strong> – Standard deviation of the process
+(corresponds to <em>sigma</em> in Gillespie 1996).</p></li>
+<li><p><strong>input_correlation</strong> – Correlation time of the input in seconds
+(corresponds to <em>tauI</em> in Gillespie 1996).</p></li>
+<li><p><strong>key</strong> – Seed for the random number generator. Defaults to 10.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Simulation trace of the Ornstein-Uhlenbeck process with shape
+<code class="docutils literal notranslate"><span class="pre">(trace_length,)</span></code> and dtype <code class="docutils literal notranslate"><span class="pre">np.double</span></code>.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The first value is scaled to the stationary standard deviation.
+Each subsequent step applies the decay parameter <em>kappa</em> and
+adds scaled Gaussian noise. The mean <em>mu</em> is added in a single
+vectorised step at the end (valid because OU processes evolve
+with a fixed mean).</p>
+<p>Internally computed variables (following Gillespie 1996):</p>
+<ul class="simple">
+<li><p><strong>kappa</strong>: Decay parameter <code class="docutils literal notranslate"><span class="pre">exp(-dt</span> <span class="pre">/</span> <span class="pre">input_correlation)</span></code>.</p></li>
+<li><p><strong>kappa_sq</strong>: <code class="docutils literal notranslate"><span class="pre">exp(-2</span> <span class="pre">*</span> <span class="pre">dt</span> <span class="pre">/</span> <span class="pre">input_correlation)</span></code>.</p></li>
+<li><p><strong>sk</strong>: <code class="docutils literal notranslate"><span class="pre">fluctuation_size</span> <span class="pre">*</span> <span class="pre">sqrt(1</span> <span class="pre">-</span> <span class="pre">kappa_sq)</span></code>.</p></li>
+<li><p><strong>eta</strong>: Pre-drawn Gaussian noise vector.</p></li>
+</ul>
+</div>
+<div class="admonition-references admonition">
+<p class="admonition-title">References</p>
+<p>Gillespie, D. T. (1996). Exact numerical simulation of the
+Ornstein-Uhlenbeck process and its integral. <em>Physical Review E</em>,
+54(2), 2084.</p>
+</div>
+</dd></dl>
+
 </section>
-<section id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Link to this heading">#</a></h2>
+<section id="module-pynamicgain">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pynamicgain" title="Link to this heading">#</a></h2>
+<p>Welcome to the PynamicGain package!</p>
+<p>To avoid having an util module, functions used by multiple modules are stored here.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pynamicgain.config_header">
+<span class="sig-prename descclassname"><span class="pre">pynamicgain.</span></span><span class="sig-name descname"><span class="pre">config_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">read_configs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynamicgain.config_header" title="Link to this definition">#</a></dt>
+<dd><p>Create the header of the configuration file.</p>
+<p>Since tomli_w does not support comments, the header is created manually.
+Some configuration information (e.g. the setup id) is already stored in
+the header and will therefore be read from the current configurations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>read_configs</strong> – The current configurations saved as dict.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The header string for the configuration file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pynamicgain.read_setup_configs">
+<span class="sig-prename descclassname"><span class="pre">pynamicgain.</span></span><span class="sig-name descname"><span class="pre">read_setup_configs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">setup_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynamicgain.read_setup_configs" title="Link to this definition">#</a></dt>
+<dd><p>Read the setup configuration file and return the configurations.</p>
+<p>Searches for the setup file in the given directory, then reads
+the configurations from the file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>]</span></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>setup_dir</strong> – The directory where the setup file is stored.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A tuple of (setup_file_path, configurations_dict).</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AssertionError</strong> – If not exactly one setup file is found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pynamicgain.PyDGBase">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pynamicgain.</span></span><span class="sig-name descname"><span class="pre">PyDGBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cli_args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynamicgain.PyDGBase" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for the PynamicGain package.</p>
+<p>Reads the setup configurations and parses CLI arguments. All specified
+directories will be created if they do not exist. Instance attributes
+are set dynamically from the setup configurations and CLI arguments.</p>
+<p>Private attributes (prefixed with <code class="docutils literal notranslate"><span class="pre">_</span></code>) will not be written to the
+setup file.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDGBase._setup_file">
+<span class="sig-name descname"><span class="pre">_setup_file</span></span><a class="headerlink" href="#pynamicgain.PyDGBase._setup_file" title="Link to this definition">#</a></dt>
+<dd><p>The path to the setup file.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDGBase._setup_configs">
+<span class="sig-name descname"><span class="pre">_setup_configs</span></span><a class="headerlink" href="#pynamicgain.PyDGBase._setup_configs" title="Link to this definition">#</a></dt>
+<dd><p>The configurations stored in the setup file.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDGBase.setup_dir">
+<span class="sig-name descname"><span class="pre">setup_dir</span></span><a class="headerlink" href="#pynamicgain.PyDGBase.setup_dir" title="Link to this definition">#</a></dt>
+<dd><p>The directory where the setup file is stored.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDGBase.version">
+<span class="sig-name descname"><span class="pre">version</span></span><a class="headerlink" href="#pynamicgain.PyDGBase.version" title="Link to this definition">#</a></dt>
+<dd><p>The version of the PynamicGain package.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDGBase.master_seed">
+<span class="sig-name descname"><span class="pre">master_seed</span></span><a class="headerlink" href="#pynamicgain.PyDGBase.master_seed" title="Link to this definition">#</a></dt>
+<dd><p>The master seed for the random number generator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDGBase.n_seeds_per_setup">
+<span class="sig-name descname"><span class="pre">n_seeds_per_setup</span></span><a class="headerlink" href="#pynamicgain.PyDGBase.n_seeds_per_setup" title="Link to this definition">#</a></dt>
+<dd><p>The number of seeds per setup.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDGBase.current_seed_index">
+<span class="sig-name descname"><span class="pre">current_seed_index</span></span><a class="headerlink" href="#pynamicgain.PyDGBase.current_seed_index" title="Link to this definition">#</a></dt>
+<dd><p>The current seed index.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDGBase.setup_id">
+<span class="sig-name descname"><span class="pre">setup_id</span></span><a class="headerlink" href="#pynamicgain.PyDGBase.setup_id" title="Link to this definition">#</a></dt>
+<dd><p>The setup id.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDGBase.setup_info">
+<span class="sig-name descname"><span class="pre">setup_info</span></span><a class="headerlink" href="#pynamicgain.PyDGBase.setup_info" title="Link to this definition">#</a></dt>
+<dd><p>The setup description.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDGBase.config_file_creator">
+<span class="sig-name descname"><span class="pre">config_file_creator</span></span><a class="headerlink" href="#pynamicgain.PyDGBase.config_file_creator" title="Link to this definition">#</a></dt>
+<dd><p>The creator of the setup file.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDGBase.creation_time">
+<span class="sig-name descname"><span class="pre">creation_time</span></span><a class="headerlink" href="#pynamicgain.PyDGBase.creation_time" title="Link to this definition">#</a></dt>
+<dd><p>The creation time of the setup file.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDGBase.stimulus_type">
+<span class="sig-name descname"><span class="pre">stimulus_type</span></span><a class="headerlink" href="#pynamicgain.PyDGBase.stimulus_type" title="Link to this definition">#</a></dt>
+<dd><p>The type of stimulus to generate.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDGBase.n_sweeps">
+<span class="sig-name descname"><span class="pre">n_sweeps</span></span><a class="headerlink" href="#pynamicgain.PyDGBase.n_sweeps" title="Link to this definition">#</a></dt>
+<dd><p>The number of sweeps to generate.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDGBase.duration">
+<span class="sig-name descname"><span class="pre">duration</span></span><a class="headerlink" href="#pynamicgain.PyDGBase.duration" title="Link to this definition">#</a></dt>
+<dd><p>The duration of the sweeps in seconds.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDGBase.sampling_rate">
+<span class="sig-name descname"><span class="pre">sampling_rate</span></span><a class="headerlink" href="#pynamicgain.PyDGBase.sampling_rate" title="Link to this definition">#</a></dt>
+<dd><p>The sampling rate of the recordings in Hz.</p>
+</dd></dl>
+
+<p>Initialise from setup configurations and CLI arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cli_args</strong> – Dictionary of command line arguments.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pynamicgain.PyDGBase.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cli_args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynamicgain.PyDGBase.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialise from setup configurations and CLI arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cli_args</strong> – Dictionary of command line arguments.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pynamicgain.PyDG">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pynamicgain.</span></span><span class="sig-name descname"><span class="pre">PyDG</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cli_args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynamicgain.PyDG" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pynamicgain.PyDGBase" title="pynamicgain.PyDGBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyDGBase</span></code></a></p>
+<p>Main class for generating DG inputs and analysing recordings.</p>
+digraph inheritance650faa7f4e {
+bgcolor=transparent;
+rankdir=LR;
+size=&quot;8.0, 12.0&quot;;
+  &quot;PyDG&quot; [fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,tooltip=&quot;Main class for generating DG inputs and analysing recordings.&quot;];
+  &quot;PyDGBase&quot; -&gt; &quot;PyDG&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;PyDGBase&quot; [fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,tooltip=&quot;Base class for the PynamicGain package.&quot;];
+}
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDG.std">
+<span class="sig-name descname"><span class="pre">std</span></span><a class="headerlink" href="#pynamicgain.PyDG.std" title="Link to this definition">#</a></dt>
+<dd><p>The standard deviation of the input signal.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDG.corr_t">
+<span class="sig-name descname"><span class="pre">corr_t</span></span><a class="headerlink" href="#pynamicgain.PyDG.corr_t" title="Link to this definition">#</a></dt>
+<dd><p>The correlation time of the input signal.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDG.out_dir">
+<span class="sig-name descname"><span class="pre">out_dir</span></span><a class="headerlink" href="#pynamicgain.PyDG.out_dir" title="Link to this definition">#</a></dt>
+<dd><p>The directory where generated files will be stored.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDG.backup_dir">
+<span class="sig-name descname"><span class="pre">backup_dir</span></span><a class="headerlink" href="#pynamicgain.PyDG.backup_dir" title="Link to this definition">#</a></dt>
+<dd><p>The directory where backup files will be stored.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDG._seed_csv">
+<span class="sig-name descname"><span class="pre">_seed_csv</span></span><a class="headerlink" href="#pynamicgain.PyDG._seed_csv" title="Link to this definition">#</a></dt>
+<dd><p>The path to the seed list CSV file.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDG._bg">
+<span class="sig-name descname"><span class="pre">_bg</span></span><a class="headerlink" href="#pynamicgain.PyDG._bg" title="Link to this definition">#</a></dt>
+<dd><p>The PCG64DXSM random number generator.</p>
+</dd></dl>
+
+<p>Initialise from setup configurations and CLI arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cli_args</strong> – Dictionary of command line arguments.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pynamicgain.PyDG.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cli_args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynamicgain.PyDG.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialise from setup configurations and CLI arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cli_args</strong> – Dictionary of command line arguments.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pynamicgain.PyDG.return_setup_configs_from_attr">
+<span class="sig-name descname"><span class="pre">return_setup_configs_from_attr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pynamicgain.PyDG.return_setup_configs_from_attr" title="Link to this definition">#</a></dt>
+<dd><p>Return all non-private configurations as a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of public instance attributes (keys not starting
+with <code class="docutils literal notranslate"><span class="pre">_</span></code>).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pynamicgain.PyDG.new_seed">
+<span class="sig-name descname"><span class="pre">new_seed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pynamicgain.PyDG.new_seed" title="Link to this definition">#</a></dt>
+<dd><p>Advance the seed index, persist it, and return a new seed.</p>
+<p>To ensure no seed is used twice, the seed index is updated
+before generating new inputs. The sequence is:</p>
+<ol class="arabic simple">
+<li><p>Increase seed index in the instance.</p></li>
+<li><p>Persist the updated index to the setup file.</p></li>
+<li><p>Draw a new seed from the RNG.</p></li>
+<li><p>Append the new seed to the CSV log.</p></li>
+<li><p>Return the new seed for input generation.</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The new seed for the next input generation.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – If any step of the seed update process fails.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pynamicgain.PyDG.create_input_abf">
+<span class="sig-name descname"><span class="pre">create_input_abf</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pynamicgain.PyDG.create_input_abf" title="Link to this definition">#</a></dt>
+<dd><p>Create all input sweeps and write them to an ABF file.</p>
+<p>A backup copy of the ABF file is also written to the backup
+directory with a timestamp prefix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The timestamp marking the start of input generation
+(used to schedule analysis).</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pynamicgain.PyDGAnalysis">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">pynamicgain.</span></span><span class="sig-name descname"><span class="pre">PyDGAnalysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cli_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynamicgain.PyDGAnalysis" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pynamicgain.PyDGBase" title="pynamicgain.PyDGBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyDGBase</span></code></a></p>
+<p>Analysis class for the dynamic gain calculations.</p>
+digraph inheritancea2120ada5c {
+bgcolor=transparent;
+rankdir=LR;
+size=&quot;8.0, 12.0&quot;;
+  &quot;PyDGAnalysis&quot; [fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,tooltip=&quot;Analysis class for the dynamic gain calculations.&quot;];
+  &quot;PyDGBase&quot; -&gt; &quot;PyDGAnalysis&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;PyDGBase&quot; [fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,tooltip=&quot;Base class for the PynamicGain package.&quot;];
+}
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDGAnalysis._start_time">
+<span class="sig-name descname"><span class="pre">_start_time</span></span><a class="headerlink" href="#pynamicgain.PyDGAnalysis._start_time" title="Link to this definition">#</a></dt>
+<dd><p>The start time for the observation.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDGAnalysis._max_time">
+<span class="sig-name descname"><span class="pre">_max_time</span></span><a class="headerlink" href="#pynamicgain.PyDGAnalysis._max_time" title="Link to this definition">#</a></dt>
+<dd><p>The maximum time for the observation.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDGAnalysis._observation_duration">
+<span class="sig-name descname"><span class="pre">_observation_duration</span></span><a class="headerlink" href="#pynamicgain.PyDGAnalysis._observation_duration" title="Link to this definition">#</a></dt>
+<dd><p>Estimated duration of recording plus buffer
+in seconds.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDGAnalysis.sweeps2analyse">
+<span class="sig-name descname"><span class="pre">sweeps2analyse</span></span><a class="headerlink" href="#pynamicgain.PyDGAnalysis.sweeps2analyse" title="Link to this definition">#</a></dt>
+<dd><p>Sweep indices that still need to be analysed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDGAnalysis.input_dir">
+<span class="sig-name descname"><span class="pre">input_dir</span></span><a class="headerlink" href="#pynamicgain.PyDGAnalysis.input_dir" title="Link to this definition">#</a></dt>
+<dd><p>The directory to watch for new recordings.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDGAnalysis.analysis_dir">
+<span class="sig-name descname"><span class="pre">analysis_dir</span></span><a class="headerlink" href="#pynamicgain.PyDGAnalysis.analysis_dir" title="Link to this definition">#</a></dt>
+<dd><p>The directory where analysis results will be stored.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynamicgain.PyDGAnalysis.analysis">
+<span class="sig-name descname"><span class="pre">analysis</span></span><a class="headerlink" href="#pynamicgain.PyDGAnalysis.analysis" title="Link to this definition">#</a></dt>
+<dd><p>The analysis settings (including visualisation settings).</p>
+</dd></dl>
+
+<p>Initialise from setup configurations and CLI arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cli_args</strong> – Dictionary of command line arguments.</p></li>
+<li><p><strong>start_time</strong> – If provided, enables observation mode with a
+time-limited directory watch. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pynamicgain.PyDGAnalysis.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cli_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynamicgain.PyDGAnalysis.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialise from setup configurations and CLI arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cli_args</strong> – Dictionary of command line arguments.</p></li>
+<li><p><strong>start_time</strong> – If provided, enables observation mode with a
+time-limited directory watch. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pynamicgain.PyDGAnalysis.observe">
+<span class="sig-name descname"><span class="pre">observe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pynamicgain.PyDGAnalysis.observe" title="Link to this definition">#</a></dt>
+<dd><p>Observe a directory and analyse newly generated ABF files.</p>
+<p>Polls <code class="docutils literal notranslate"><span class="pre">input_dir</span></code> at regular intervals until all sweeps have
+been analysed or the time limit is reached.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The number of sweeps that remain unanalysed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pynamicgain.PyDGAnalysis.analyse_rec">
+<span class="sig-name descname"><span class="pre">analyse_rec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file2analyse</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynamicgain.PyDGAnalysis.analyse_rec" title="Link to this definition">#</a></dt>
+<dd><p>Analyse all available sweeps in a single ABF file.</p>
+<p>Can be called explicitly to analyse existing data or by the
+observer to analyse newly recorded data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>file2analyse</strong> – Absolute path to the ABF file to analyse.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The number of sweeps that remain unanalysed.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>ABF sweeps cannot be read concurrently. The current sweep is
+selected via <code class="docutils literal notranslate"><span class="pre">abf.setSweep</span></code> and its data accessed through
+<code class="docutils literal notranslate"><span class="pre">abf.sweepY</span></code>. The full sweep list is in <code class="docutils literal notranslate"><span class="pre">abf.sweepList</span></code>.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 
@@ -534,10 +1237,75 @@
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain-analysis-module">pynamicgain.analysis module</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain-new-setup-module">pynamicgain.new_setup module</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain-stimulus-generation-module">pynamicgain.stimulus_generation module</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-contents">Module contents</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-pynamicgain.analysis">pynamicgain.analysis module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.analysis.get_analysis_function"><code class="docutils literal notranslate"><span class="pre">get_analysis_function()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.analysis.set_analysis_parameters"><code class="docutils literal notranslate"><span class="pre">set_analysis_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.analysis.minimal_spike_train_analysis"><code class="docutils literal notranslate"><span class="pre">minimal_spike_train_analysis()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-pynamicgain.new_setup">pynamicgain.new_setup module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.new_setup.ask_set_input"><code class="docutils literal notranslate"><span class="pre">ask_set_input()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.new_setup.initiate_new_setup"><code class="docutils literal notranslate"><span class="pre">initiate_new_setup()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-pynamicgain.stimulus_generation">pynamicgain.stimulus_generation module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.stimulus_generation.generate_input"><code class="docutils literal notranslate"><span class="pre">generate_input()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.stimulus_generation.create_input_dict"><code class="docutils literal notranslate"><span class="pre">create_input_dict()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.stimulus_generation.create_filename"><code class="docutils literal notranslate"><span class="pre">create_filename()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.stimulus_generation.inner_exact"><code class="docutils literal notranslate"><span class="pre">inner_exact()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.stimulus_generation.exact_ou_process"><code class="docutils literal notranslate"><span class="pre">exact_ou_process()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-pynamicgain">Module contents</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.config_header"><code class="docutils literal notranslate"><span class="pre">config_header()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.read_setup_configs"><code class="docutils literal notranslate"><span class="pre">read_setup_configs()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGBase"><code class="docutils literal notranslate"><span class="pre">PyDGBase</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGBase._setup_file"><code class="docutils literal notranslate"><span class="pre">PyDGBase._setup_file</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGBase._setup_configs"><code class="docutils literal notranslate"><span class="pre">PyDGBase._setup_configs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGBase.setup_dir"><code class="docutils literal notranslate"><span class="pre">PyDGBase.setup_dir</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGBase.version"><code class="docutils literal notranslate"><span class="pre">PyDGBase.version</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGBase.master_seed"><code class="docutils literal notranslate"><span class="pre">PyDGBase.master_seed</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGBase.n_seeds_per_setup"><code class="docutils literal notranslate"><span class="pre">PyDGBase.n_seeds_per_setup</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGBase.current_seed_index"><code class="docutils literal notranslate"><span class="pre">PyDGBase.current_seed_index</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGBase.setup_id"><code class="docutils literal notranslate"><span class="pre">PyDGBase.setup_id</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGBase.setup_info"><code class="docutils literal notranslate"><span class="pre">PyDGBase.setup_info</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGBase.config_file_creator"><code class="docutils literal notranslate"><span class="pre">PyDGBase.config_file_creator</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGBase.creation_time"><code class="docutils literal notranslate"><span class="pre">PyDGBase.creation_time</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGBase.stimulus_type"><code class="docutils literal notranslate"><span class="pre">PyDGBase.stimulus_type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGBase.n_sweeps"><code class="docutils literal notranslate"><span class="pre">PyDGBase.n_sweeps</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGBase.duration"><code class="docutils literal notranslate"><span class="pre">PyDGBase.duration</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGBase.sampling_rate"><code class="docutils literal notranslate"><span class="pre">PyDGBase.sampling_rate</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGBase.__init__"><code class="docutils literal notranslate"><span class="pre">PyDGBase.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDG"><code class="docutils literal notranslate"><span class="pre">PyDG</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDG.std"><code class="docutils literal notranslate"><span class="pre">PyDG.std</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDG.corr_t"><code class="docutils literal notranslate"><span class="pre">PyDG.corr_t</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDG.out_dir"><code class="docutils literal notranslate"><span class="pre">PyDG.out_dir</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDG.backup_dir"><code class="docutils literal notranslate"><span class="pre">PyDG.backup_dir</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDG._seed_csv"><code class="docutils literal notranslate"><span class="pre">PyDG._seed_csv</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDG._bg"><code class="docutils literal notranslate"><span class="pre">PyDG._bg</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDG.__init__"><code class="docutils literal notranslate"><span class="pre">PyDG.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDG.return_setup_configs_from_attr"><code class="docutils literal notranslate"><span class="pre">PyDG.return_setup_configs_from_attr()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDG.new_seed"><code class="docutils literal notranslate"><span class="pre">PyDG.new_seed()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDG.create_input_abf"><code class="docutils literal notranslate"><span class="pre">PyDG.create_input_abf()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGAnalysis"><code class="docutils literal notranslate"><span class="pre">PyDGAnalysis</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGAnalysis._start_time"><code class="docutils literal notranslate"><span class="pre">PyDGAnalysis._start_time</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGAnalysis._max_time"><code class="docutils literal notranslate"><span class="pre">PyDGAnalysis._max_time</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGAnalysis._observation_duration"><code class="docutils literal notranslate"><span class="pre">PyDGAnalysis._observation_duration</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGAnalysis.sweeps2analyse"><code class="docutils literal notranslate"><span class="pre">PyDGAnalysis.sweeps2analyse</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGAnalysis.input_dir"><code class="docutils literal notranslate"><span class="pre">PyDGAnalysis.input_dir</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGAnalysis.analysis_dir"><code class="docutils literal notranslate"><span class="pre">PyDGAnalysis.analysis_dir</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGAnalysis.analysis"><code class="docutils literal notranslate"><span class="pre">PyDGAnalysis.analysis</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGAnalysis.__init__"><code class="docutils literal notranslate"><span class="pre">PyDGAnalysis.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGAnalysis.observe"><code class="docutils literal notranslate"><span class="pre">PyDGAnalysis.observe()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pynamicgain.PyDGAnalysis.analyse_rec"><code class="docutils literal notranslate"><span class="pre">PyDGAnalysis.analyse_rec()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
   </nav></div>
 
@@ -584,7 +1352,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
     <br/>
   </p>
 </div>
