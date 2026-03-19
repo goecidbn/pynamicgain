@@ -1,6 +1,19 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.0.12] - 2026-03-19
+
+### Changed
+- **Module split**: The monolithic `__init__.py` (700+ lines) has been split into focused modules for better separation of concerns, testability, and debug-friendliness:
+  - `config.py` — configuration I/O, validation, logging setup, directory checks. Lightweight (no scientific dependencies).
+  - `base.py` — `PyDGBase` abstract base class.
+  - `generator.py` — `PyDG` class with seed management and ABF generation.
+  - `observer.py` — `PyDGAnalysis` class with observation mode and sweep analysis.
+  - `__init__.py` — thin re-export layer (~50 lines). All existing imports (`from pynamicgain import PyDG`) continue to work unchanged.
+- `_check_directory` renamed to `check_directory` (public API in `config.py`).
+- `new_setup.py` imports `config_header` from `pynamicgain.config` directly, avoiding heavy dependency loading for the setup wizard.
+- Default configuration version bumped to `0.0.12`.
+
 ## [0.0.11] - 2026-03-19
 
 ### Fixed

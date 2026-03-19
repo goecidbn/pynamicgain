@@ -31,7 +31,8 @@ import pandas as pd
 import tomli
 import tomli_w
 
-from pynamicgain import config_header, __version__
+from pynamicgain.config import config_header
+from pynamicgain import __version__
 
 logger = logging.getLogger(__name__)
 
