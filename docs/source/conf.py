@@ -11,7 +11,6 @@ import sys
 from importlib.metadata import version as get_version
 
 sys.path.insert(0, os.path.abspath('../..'))
-print(os.path.abspath('../..'))
 
 project = 'Pynamic Gain'
 copyright = '2024, Friedrich Schwarz, Stefan Pommer, Andreas Neef'
@@ -71,7 +70,6 @@ html_sidebars = {
     "explanations/*": ["sidebar-nav-bs", "navbar-nav"],  # [] to disable
     "index.html": [],
     "_autosummary/*": ["sidebar-nav-bs"],
-    "_apidoc/*": ["navbar-nav"],  # TODO: Find a way to have the sidebar-nav-bs of _autosummary
 }
 html_css_files = [
     'custom.css',
@@ -98,6 +96,15 @@ autodoc_member_order = 'bysource'
 autoclass_content = 'both'
 autodoc_mock_imports = ["git"]
 autosummary_generate = True
+
+# intersphinx settings
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
+    'numpy': ('https://numpy.org/doc/stable/', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/', None),
+    'matplotlib': ('https://matplotlib.org/stable/', None),
+    'pandas': ('https://pandas.pydata.org/docs/', None),
+}
 
 # graphviz settings
 graphviz_output_format='svg'

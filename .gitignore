@@ -34,6 +34,8 @@ Icon
 # sphinx
 **/.doctrees
 **/.buildinfo
+docs/source/_autosummary/
+docs/source/_apidoc/
 
 
 # drawio
