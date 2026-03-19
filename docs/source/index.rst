@@ -59,6 +59,8 @@ Institutions
 
 **The developer team is part of the** `Göttingen Campus Institute for Dynamics of Biological Networks (CIDBN) <https://uni-goettingen.de/en/608362.html>`_.
 
+A Software Management Plan for this project can be found `here <https://fschwar4.github.io/pynamicgain/explanations/SMPR.html>`.
+
 ..
 
 ----------------

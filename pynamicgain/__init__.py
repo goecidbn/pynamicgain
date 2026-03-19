@@ -51,7 +51,7 @@ def config_header(read_configs: dict) -> str:
     Since tomli_w does not support comments, the header is created manually.
     
     Some configuration information (e.g. the setup id) is already stored in the
-    header. already stored in the header and will therefore be read from the
+    header. Already stored in the header and will therefore be read from the
     current configurations.
 
     Args:
