@@ -55,8 +55,16 @@ import docopt
 from pynamicgain import PyDG, PyDGAnalysis
 
 
-def get_cli_args():
-    """Wrapper around docopt to get the CLI arguments."""
+def get_cli_args() -> dict:
+    """Parse and normalise command line arguments via docopt.
+
+    Strips docopt key prefixes (``--``, ``<>``) and converts values to
+    their expected Python types. Directory paths set to ``'.'`` are
+    resolved to the current working directory.
+
+    Returns:
+        Normalised keyword arguments ready for class instantiation.
+    """
     kwargs = docopt.docopt(__doc__)  # read
     
     # modify kwargs (remove -- and </> from keys)
@@ -93,7 +101,18 @@ def get_cli_args():
     return kwargs
     
     
-def generate(only_generate: bool = True):
+def generate(only_generate: bool = True) -> Optional[dt]:
+    """Generate input signals and write them to ABF files.
+
+    Args:
+        only_generate: If True, print a goodbye message and return None.
+            If False, return the generation timestamp for downstream
+            analysis scheduling.
+
+    Returns:
+        The generation timestamp when ``only_generate`` is False,
+        otherwise None.
+    """
     print('\nGenerating input signals...\n')
     cl_args = get_cli_args()
     myPG = PyDG(cl_args)
@@ -111,7 +130,17 @@ def generate(only_generate: bool = True):
         return _timestamp
 
 
-def analyse(start_time: Optional[dt] = None):
+def analyse(start_time: Optional[dt] = None) -> None:
+    """Analyse patch clamp recordings.
+
+    When ``start_time`` is provided, enters observation mode and monitors
+    the input directory for new ABF files. Otherwise, analyses the file
+    specified via the ``--analyse_file`` CLI argument.
+
+    Args:
+        start_time: If provided, the timestamp from which to observe
+            the input directory for new recordings. Defaults to None.
+    """
     cl_args = get_cli_args()
     myPDGA = PyDGAnalysis(cl_args, start_time)
     if start_time:
@@ -127,24 +156,17 @@ def analyse(start_time: Optional[dt] = None):
     print('\nThank you for using PynamicGain!\n')
     
 
-def generate_analyse():
+def generate_analyse() -> None:
+    """Generate input signals and immediately analyse the recordings.
+
+    Combines :func:`generate` and :func:`analyse` into a single workflow.
+    """
     _starttime = generate(only_generate=False)
     analyse(_starttime)
 
 
-def help():
-    """
-    Prints a help message detailing the commands available in the PynamicGain program.
-
-    The help message includes a brief description of the program, a list of commands,
-    contact information for reporting bugs, and the homepage of the program.
-
-    Args:
-        None
-
-    Returns:
-        None
-    """
+def help() -> None:
+    """Print available PynamicGain CLI commands and contact information."""
     print(
         '\n'
         'PynamicGain: Python-based Dynamic Gain inputs for your patch clamp setup.\n'

@@ -33,7 +33,26 @@ from pynamicgain import config_header, __version__
 
 
 def ask_set_input(question: str, prompt: str, _assert: callable = None):
-    """Ask the user if an input path should be set."""
+    """Prompt the user with a yes/no question and optionally collect input.
+
+    If the user answers *yes*, they are asked for a value that is
+    validated with ``_assert``. Up to 5 invalid attempts are allowed
+    before raising an error.
+
+    Args:
+        question: The yes/no question to display.
+        prompt: The follow-up prompt for the actual value.
+        _assert: Optional validation callable. Receives the stripped
+            user input and should return True if valid.
+
+    Returns:
+        The validated user input string, or None if the user answered
+        *no*.
+
+    Raises:
+        RuntimeError: If the maximum number of invalid attempts is
+            reached.
+    """
     c_ = 0
     _input = None
     while True and c_ < 5:
@@ -59,30 +78,28 @@ def ask_set_input(question: str, prompt: str, _assert: callable = None):
     return _input if _input else None
         
 
-def initiate_new_setup():
-    """This function generates a new setup configuration file for DG on pClamp setups.
-    
-    The following configuration parameters will be asked:
-    
-        - setup id: The id of the setup. Must be a positive integer. Please
-          speak with us, before creating a new setup (and define the setup id).
-        - setup description: A short description of the setup.
-        - setup creator: Your name.
-        - output path: The path where the .abf files will be saved (optional).
-        - input path: The path where the patch clamp recordings are stored
-          (optional).
-        - sampling rate: The sampling rate of the recordings.
-        - save path: The path where the setup configuration file will be saved.
-        
-    As the output path (where the .abf files will be saved) and the input path
-    (where the patch clamp recordings are stored) as well as the sampling rate
-    of the setup are most likely to be fixed, these settings can be stored in
-    the setup configuration file to avoid redundant user input.
-    
-    The setup configuration file will be saved in the 'configs' folder. Please
-    copy the file to a save location, as the file might be overwritten when
-    updating the library.
-    
+def initiate_new_setup() -> None:
+    """Interactively create a new setup configuration file for DG on pClamp.
+
+    Prompts the user for:
+
+    - **setup id** -- positive integer (coordinate with your team first).
+    - **setup description** -- short free-text description.
+    - **setup creator** -- your name.
+    - **output path** -- where ``.abf`` files will be saved (optional).
+    - **input path** -- where patch clamp recordings are stored (optional).
+    - **sampling rate**, **n_sweeps**, **duration** -- recording parameters
+      (optional, stored as defaults).
+    - **save path** -- where the configuration file will be written.
+
+    The generated TOML configuration file and a companion seed-list CSV
+    are written to the specified save path.
+
+    Raises:
+        AssertionError: If the setup id, description, creator, or save
+            path are invalid.
+        FileExistsError: If a configuration file for the given setup id
+            already exists at the save path.
     """
     print('\nWelcome to the setup configuration file generator.')
     

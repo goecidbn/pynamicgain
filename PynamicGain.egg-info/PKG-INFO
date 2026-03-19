@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: PynamicGain
-Version: 0.0.9
+Version: 0.0.10
 Summary: Dynamic Gain input generation for distributed PClamp setups.
 Author: Andreas Neef, Stefan Pommer
 Author-email: Friedrich Schwarz <friedrichschwarz@unigoettingen.de>

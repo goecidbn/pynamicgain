@@ -21,14 +21,17 @@ To avoid having an util module, functions used by multiple modules are stored he
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-__version__ = '0.0.10'
-
-
 import os
 import time
 from datetime import datetime as dt
 from datetime import timedelta
+from importlib.metadata import version, PackageNotFoundError
 from typing import Optional
+
+try:
+    __version__ = version("pynamicgain")
+except PackageNotFoundError:
+    __version__ = "unknown"
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -46,18 +49,17 @@ from pynamicgain.analysis import get_analysis_function, set_analysis_parameters
 
 
 def config_header(read_configs: dict) -> str:
-    """Returns the header of the configuration file.
+    """Create the header of the configuration file.
 
     Since tomli_w does not support comments, the header is created manually.
-    
     Some configuration information (e.g. the setup id) is already stored in
     the header and will therefore be read from the current configurations.
 
     Args:
-        read_configs (dict): The current configurations saved as dict.
+        read_configs: The current configurations saved as dict.
 
     Returns:
-        str: The header for the configuration file.
+        The header string for the configuration file.
     """
     header = (
         f'# Configuration File for DG PClamp Setup {read_configs["setup_id"]}\n'
@@ -78,16 +80,19 @@ def config_header(read_configs: dict) -> str:
 
 
 def read_setup_configs(setup_dir: str) -> tuple[str, dict]:
-    """Reads the setup configuration file and returns the configurations as dict.
-    
-    First, searches for the setup file in the given directory. Then, reads the
-    configurations from the file.
-    
+    """Read the setup configuration file and return the configurations.
+
+    Searches for the setup file in the given directory, then reads
+    the configurations from the file.
+
     Args:
-        setup_dir (str): The directory where the setup file is stored.
-        
+        setup_dir: The directory where the setup file is stored.
+
     Returns:
-        tuple[str, dict]: A tuple of the setup file path and the configurations dict.
+        A tuple of (setup_file_path, configurations_dict).
+
+    Raises:
+        AssertionError: If not exactly one setup file is found.
     """
     setup_file = [f for f in os.listdir(setup_dir) if f.startswith('setup_')]
     assert len(setup_file) == 1, f"ABORT: Expected exactly one setup file, found {len(setup_file)}!"
@@ -101,39 +106,38 @@ def read_setup_configs(setup_dir: str) -> tuple[str, dict]:
 
 class PyDGBase:
     """Base class for the PynamicGain package.
-    
-    This class is responsible for reading the setup configurations and parsing
-    the command line arguments.
-    
-    All specified directories will be created if they do not exist.
-    
-    The instance attributes are set dynamically from the setup configurations
-    and the command line arguments.
-    
-    All private attributes are stored with an underscore in the beginning and
-    will not be written to the setup file.
-    
-    The following attributes will be set:
-        - _setup_file (str): The path to the setup file.
-        - _setup_configs (dict): The configurations stored in the setup file.
-        - setup_dir (str): The directory where the setup file is stored.
-        - version (str): The version of the PynamicGain package.
-        - master_seed (int): The master seed for the random number generator.
-        - n_seeds_per_setup (int): The number of seeds per setup.
-        - current_seed_index (int): The current seed index.
-        - setup_id (int): The setup id.
-        - setup_info (str): The setup description.
-        - config_file_creator (str): The creator of the setup file.
-        - creation_time (str): The creation time of the setup file.
-        - stimulus_type (str): The type of stimulus to generate.
-        - n_sweeps (int): The number of sweeps to generate.
-        - duration (float): The duration of the sweeps.
-        - sampling_rate (int): The sampling rate of the recordings.
-    
+
+    Reads the setup configurations and parses CLI arguments. All specified
+    directories will be created if they do not exist. Instance attributes
+    are set dynamically from the setup configurations and CLI arguments.
+
+    Private attributes (prefixed with ``_``) will not be written to the
+    setup file.
+
+    Attributes:
+        _setup_file: The path to the setup file.
+        _setup_configs: The configurations stored in the setup file.
+        setup_dir: The directory where the setup file is stored.
+        version: The version of the PynamicGain package.
+        master_seed: The master seed for the random number generator.
+        n_seeds_per_setup: The number of seeds per setup.
+        current_seed_index: The current seed index.
+        setup_id: The setup id.
+        setup_info: The setup description.
+        config_file_creator: The creator of the setup file.
+        creation_time: The creation time of the setup file.
+        stimulus_type: The type of stimulus to generate.
+        n_sweeps: The number of sweeps to generate.
+        duration: The duration of the sweeps in seconds.
+        sampling_rate: The sampling rate of the recordings in Hz.
     """
-    
+
     def __init__(self, cli_args: dict):
-        """Read setup configurations and command line arguments set them as attributes."""
+        """Initialise from setup configurations and CLI arguments.
+
+        Args:
+            cli_args: Dictionary of command line arguments.
+        """
         self._setup_file, self._setup_configs = read_setup_configs(cli_args['setup_dir'])
         cli_args.update(self._setup_configs)
 
@@ -151,33 +155,36 @@ class PyDGBase:
                 os.makedirs(v, exist_ok=True)
 
     def __repr__(self):
-        """Create a string representation of the class (every attribute with its value in a new line)"""
+        """Return a detailed string representation with all attributes."""
         attrs = '\n\t'.join(f"{k + ': ': <25}{v!r}" for k, v in self.__dict__.items())
         return f'\n{self.__class__.__name__}:\n\t{attrs}'
 
     def __str__(self):
-        """Create a string representation of the class (every attribute with its value in a new line)"""
+        """Return a human-readable string representation."""
         return self.__repr__()
 
 
 class PyDG(PyDGBase):
-    """Main class for the PynamicGain package for generating DG inputs and analysing recordings.
-    
+    """Main class for generating DG inputs and analysing recordings.
+
     .. inheritance-diagram:: pynamicgain.__init__.PyDG
         :parts: 1
-        
-    The following additional instance attributes are set:
-        - std (float): The standard deviation of the input signal. 
-        - corr_t (float): The correlation time of the input signal.
-        - out_dir (str): The directory where generated files will be stored.
-        - backup_dir (str): The directory where backup files will be stored.
-        - _seed_csv (str): The path to the seed list csv file.
-        - _bg (PCG64DXSM): The random number generator.
-    
+
+    Attributes:
+        std: The standard deviation of the input signal.
+        corr_t: The correlation time of the input signal.
+        out_dir: The directory where generated files will be stored.
+        backup_dir: The directory where backup files will be stored.
+        _seed_csv: The path to the seed list CSV file.
+        _bg: The PCG64DXSM random number generator.
     """
-     
+
     def __init__(self, cli_args: dict):
-        """Read setup configurations and command line arguments set them as attributes"""
+        """Initialise from setup configurations and CLI arguments.
+
+        Args:
+            cli_args: Dictionary of command line arguments.
+        """
         super().__init__(cli_args)
 
         self._seed_csv = os.path.join(cli_args['setup_dir'], f'seed_list_setup_{self._setup_configs["setup_id"]}.csv')
@@ -189,29 +196,32 @@ class PyDG(PyDGBase):
         self._bg = PCG64DXSM(self.master_seed)
         self._bg.advance(self.current_seed_index + self.setup_id * self.n_seeds_per_setup)
     
-    def return_setup_configs_from_attr(self):
-        """Return all non-private configurations as dict."""
+    def return_setup_configs_from_attr(self) -> dict:
+        """Return all non-private configurations as a dictionary.
+
+        Returns:
+            Dictionary of public instance attributes (keys not starting
+            with ``_``).
+        """
         return {k: v for k, v in self.__dict__.items() if not k.startswith('_')}
     
     def new_seed(self) -> int:
-        """Update the seed index in the class and the setup file.
-        
-        To ensure no seed is used twice, all updating of the seed index is done
-        before generating new inputs.
-        
-        Order:
-            - increase seed index in class
-            - update seed index in setup file
-            - draw new seed
-            - save new seed in csv
-            - return new seed (to further use for input generation)
-            
+        """Advance the seed index, persist it, and return a new seed.
+
+        To ensure no seed is used twice, the seed index is updated
+        before generating new inputs. The sequence is:
+
+        1. Increase seed index in the instance.
+        2. Persist the updated index to the setup file.
+        3. Draw a new seed from the RNG.
+        4. Append the new seed to the CSV log.
+        5. Return the new seed for input generation.
+
         Returns:
-            int: The new seed for the next input generation.
-            
+            The new seed for the next input generation.
+
         Raises:
-            RuntimeError: If an error occurs during the seed update process.
-            
+            RuntimeError: If any step of the seed update process fails.
         """
         try:
             self.current_seed_index += 1  # increase seed index in class
@@ -249,10 +259,15 @@ class PyDG(PyDGBase):
             # just to be sure, that the program does stop
             raise RuntimeError(f"Error while updating seed: {e}")
 
-    def create_input_abf(self):
-        """Creates all input traces and writes them to an ABF file.
-        
-        Furthermore, a backup file is created in the backup directory.
+    def create_input_abf(self) -> dt:
+        """Create all input sweeps and write them to an ABF file.
+
+        A backup copy of the ABF file is also written to the backup
+        directory with a timestamp prefix.
+
+        Returns:
+            The timestamp marking the start of input generation
+            (used to schedule analysis).
         """
         self._f_name = create_filename(self.stimulus_type, **self.__dict__)
         self._f_path_name = os.path.join(self.out_dir, self._f_name)
@@ -284,24 +299,30 @@ class PyDG(PyDGBase):
 
 
 class PyDGAnalysis(PyDGBase):
-    """Basic analysis class for the dynamic gain calculations.
-    
+    """Analysis class for the dynamic gain calculations.
+
     .. inheritance-diagram:: pynamicgain.__init__.PyDGAnalysis
-        :parts: 1  
-        
-    The following additional instance attributes are set:
-        - _start_time (dt): The start time for the observation.
-        - _max_time (dt): The maximum time for the observation.
-        - _observation_duration (int): The estimated duration of recording plus buffer.
-        - sweeps2analyse (list): The sweeps that still need to be analysed.
-        - input_dir (str): The directory where to watch for new recordings.
-        - analysis_dir (str): The directory where the analysis results will be stored.
-        - analysis (dict): The analysis setting (including visualisation settings).
-    
+        :parts: 1
+
+    Attributes:
+        _start_time: The start time for the observation.
+        _max_time: The maximum time for the observation.
+        _observation_duration: Estimated duration of recording plus buffer
+            in seconds.
+        sweeps2analyse: Sweep indices that still need to be analysed.
+        input_dir: The directory to watch for new recordings.
+        analysis_dir: The directory where analysis results will be stored.
+        analysis: The analysis settings (including visualisation settings).
     """
-    
+
     def __init__(self, cli_args: dict, start_time: Optional[dt] = None) -> None:
-        """Read setup configurations and command line arguments set them as attributes."""
+        """Initialise from setup configurations and CLI arguments.
+
+        Args:
+            cli_args: Dictionary of command line arguments.
+            start_time: If provided, enables observation mode with a
+                time-limited directory watch. Defaults to None.
+        """
         super().__init__(cli_args)
 
         if start_time:
@@ -314,8 +335,15 @@ class PyDGAnalysis(PyDGBase):
             
         self.sweeps2analyse = list(np.arange(self.n_sweeps, dtype=int))
 
-    def observe(self):
-        """Observe a directory and analyse newly generated data."""
+    def observe(self) -> int:
+        """Observe a directory and analyse newly generated ABF files.
+
+        Polls ``input_dir`` at regular intervals until all sweeps have
+        been analysed or the time limit is reached.
+
+        Returns:
+            The number of sweeps that remain unanalysed.
+        """
         print(f'Start observing {self.input_dir} for new files to analyse...')
         while dt.now() < self._max_time:
             time.sleep(self.settings['update_interval'])
@@ -346,26 +374,22 @@ class PyDGAnalysis(PyDGBase):
         return len(self.sweeps2analyse)
 
 
-    def analyse_rec(self, file2analyse: str):
-        """Wrapper to analyse newly generated data.
-        
-        This function analyses all available sweeps in one abf file. When called
-        explicitly, it can be used to analyse old data. However, this function
-        is also used by the observer to analyse the latest data.
+    def analyse_rec(self, file2analyse: str) -> int:
+        """Analyse all available sweeps in a single ABF file.
+
+        Can be called explicitly to analyse existing data or by the
+        observer to analyse newly recorded data.
 
         Args:
-            what (list, optional): The type of analysis to perform. Defaults to
-            ['mini_sta'].
+            file2analyse: Absolute path to the ABF file to analyse.
 
         Returns:
-            dict: The results of the analysis.
+            The number of sweeps that remain unanalysed.
 
         Note:
-            The sweeps of the abf file can not be read concurrently. Therefore, one
-            must iterate through all sweeps. The variable storing the current sweep
-            can be set via `abf.SetSweep`. Initially, the first sweep is set
-            automatically. The sweep data is stored in `abf.sweepY`. All sweeps are
-            stored in `abf.sweepList`.
+            ABF sweeps cannot be read concurrently. The current sweep is
+            selected via ``abf.setSweep`` and its data accessed through
+            ``abf.sweepY``. The full sweep list is in ``abf.sweepList``.
         """
         only_filename = os.path.splitext(os.path.basename(file2analyse))[0]
         if len(self.sweeps2analyse) == self.n_sweeps:

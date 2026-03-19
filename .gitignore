@@ -67,3 +67,8 @@ Mea X.idea
 # Tresorit
 **.tresorit
 **.tresorit/**
+
+.claude
+
+# do not upload build files of documentation
+docs/build/

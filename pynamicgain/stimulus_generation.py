@@ -29,16 +29,20 @@ from numba import njit
 
 
 def generate_input(type: str = 'OU', **kwargs) -> NDArray[np.float64]:
-    """Wrapper to generate input for the dynamic gain calculation.
-    
-    This function generates the input for the dynamic gain calculation.
-    Currently, only the Ornstein-Uhlenbeck process is implemented.
-    
+    """Generate an input signal for the dynamic gain calculation.
+
+    Currently only the Ornstein-Uhlenbeck (OU) process is implemented.
+
     Args:
-        type (str, optional): The type of input to generate. Defaults to 'OU'.
-    
+        type: The type of input to generate. Defaults to ``'OU'``.
+        **kwargs: Forwarded to :func:`create_input_dict` for parameter
+            extraction.
+
     Returns:
-        NDArray[np.float64]: The generated input signal.
+        The generated input signal as a 1-D array.
+
+    Raises:
+        ValueError: If ``type`` is not a recognised input type.
     """
     input_kwargs = create_input_dict(type, **kwargs)
     
@@ -49,8 +53,20 @@ def generate_input(type: str = 'OU', **kwargs) -> NDArray[np.float64]:
     
     
 
-def create_input_dict(type: str = 'OU', **kwargs):
-    """Creating/Parsing the relevant parameters for the input generation."""
+def create_input_dict(type: str = 'OU', **kwargs) -> dict:
+    """Extract and normalise parameters for input generation.
+
+    Args:
+        type: The type of input to generate. Defaults to ``'OU'``.
+        **kwargs: Must contain ``duration``, ``sampling_rate``,
+            ``stimulus``, ``std``, ``corr_t``, and ``key``.
+
+    Returns:
+        Dictionary of keyword arguments for the generator function.
+
+    Raises:
+        ValueError: If ``type`` is not a recognised input type.
+    """
     if type == 'OU':
         _kwargs = {
             "duration": kwargs['duration'],
@@ -66,11 +82,20 @@ def create_input_dict(type: str = 'OU', **kwargs):
     return _kwargs
 
 
-def create_filename(type: str = 'OU', **kwargs):
-    """Creating the filename for the input file.
-    
-    This depends on the input type and the parameters used for the input
-    generation.
+def create_filename(type: str = 'OU', **kwargs) -> str:
+    """Build a standardised filename for the input ABF file.
+
+    The filename encodes the input type and key parameters.
+
+    Args:
+        type: The type of input to generate. Defaults to ``'OU'``.
+        **kwargs: Must contain ``corr_t`` and ``n_sweeps``.
+
+    Returns:
+        The generated filename string (e.g. ``OU_5ms_10sweeps.abf``).
+
+    Raises:
+        ValueError: If ``type`` is not a recognised input type.
     """
     if type == 'OU':
         _filename = f"OU_{kwargs['corr_t']}ms_{kwargs['n_sweeps']}sweeps.abf"
@@ -82,9 +107,18 @@ def create_filename(type: str = 'OU', **kwargs):
 
 @njit()
 def inner_exact(eta, mu, _kappa):
-    """
-    Inner function calculating the exact OU-process solution step by step.
-    Using numba JIT for speedup.
+    """Compute the exact OU-process solution step-by-step (Numba JIT).
+
+    Applies the recursive relation in-place on ``eta``, then adds the
+    mean ``mu``.
+
+    Args:
+        eta: Pre-allocated noise vector (modified in-place).
+        mu: Mean of the OU process.
+        _kappa: Decay parameter ``exp(-dt / tau)``.
+
+    Returns:
+        The completed OU trace (``eta + mu``, same array).
     """
     for i in range(1, len(eta)):
         eta[i] += eta[i-1] * _kappa
@@ -99,71 +133,41 @@ def exact_ou_process(
     input_correlation: float,
     key: int = 10) -> NDArray[np.float64]:
     """Generate an Ornstein-Uhlenbeck process.
-    
-    Numba-based implementation generating an Ornstein-Uhlenbeck process.
-    Using JIT power for speedup.
-    
-    Parameters:
-        duration (int): Duration of the simulation in seconds.
-        dt (float): Duration of one time step of the simulation.
-        mu (float): Average input strength.
-        fluctuation_size (float): The size of the process' fluctuation.
-        input_correlation (float): The correlation time of the input in
-            seconds.
-            
+
+    Numba-accelerated implementation based on Gillespie 1996 (Phys Rev E).
+
+    Args:
+        duration: Duration of the simulation in seconds.
+        dt: Duration of one time step of the simulation in seconds.
+        mu: Average input strength (mean of the OU process).
+        fluctuation_size: Standard deviation of the process
+            (corresponds to *sigma* in Gillespie 1996).
+        input_correlation: Correlation time of the input in seconds
+            (corresponds to *tauI* in Gillespie 1996).
+        key: Seed for the random number generator. Defaults to 10.
+
     Returns:
-        NDArray[np.double]: Simulation trace of the Ornstein-Uhlenbeck
-            Process, given the certain arguments.
-            shape=(1,trace_length)
-            dtype= np.double
-            
-    Other Parameters:
-        kappa (float): Decay Parameter, implementing the correlation
-            between the time steps.
-        kappa_sq (float): Square root of decay Parameter (`kappa`). Used
-            for calculating the next step.
-        sk (float): Product of `fluctuation_size` and `kappa_sq`. Since
-            this is static. This variable is called within the loop of
-            the trace calculation.
-        eta (NDArray[np.double]): Vector of (pre-calculated) random numbers,
-            used to calculate the next time step. The values are gene- rated
-            before the calculation loop and drawn from a Standard Gaussian
-            distribution.
-        trace_length (int): Number of elements within the trace.
-            Calculated by dividing the duration by the time step length.
+        Simulation trace of the Ornstein-Uhlenbeck process with shape
+        ``(trace_length,)`` and dtype ``np.double``.
 
     Note:
-        The first value is simply derived by multiplying the scale para-
-        meter (`fluctuation_size`) with a randomly drawn number.
+        The first value is scaled to the stationary standard deviation.
+        Each subsequent step applies the decay parameter *kappa* and
+        adds scaled Gaussian noise. The mean *mu* is added in a single
+        vectorised step at the end (valid because OU processes evolve
+        with a fixed mean).
 
-        Every following time step is calculated by the multiplying the
-        time step before with the decay parameter (`kappa`) and adding a
-        new randomly drawn number multiplied by the square root of the
-        (`kappa_sq`) and the scaling parameter (`fluctuation_size`).
+        Internally computed variables (following Gillespie 1996):
 
-        Lastly the average input strength (`mu`) is added in one step.
-        This step is equivalent to adding it in every step, since
-        Ornstein-Uhlenbeck processes evolve with fixed mean.
-
-       All functions in this file, use one numpy random number generator
-       (RNG_OU). The RNG_OU is instantiated once, the file or one
-       function is called. This has the advantage, that repeated runs
-       are reproducible. But, please keep in mind, that multiple calls
-       of the single trace functions, will always give the same trace.
-       Please call the `ornstein_uhlenbeck_multiple()` function for
-       multiple (and different) traces.
+        - **kappa**: Decay parameter ``exp(-dt / input_correlation)``.
+        - **kappa_sq**: ``exp(-2 * dt / input_correlation)``.
+        - **sk**: ``fluctuation_size * sqrt(1 - kappa_sq)``.
+        - **eta**: Pre-drawn Gaussian noise vector.
 
     References:
-        The calculation is based on Gillespie 1996 (Phys Rev E).
-        Following parameters correspond to the author's original notion:
-
-        |    fluctuation_size : sigma
-        |    input_correlation : tauI
-
-        The variables calculated within the function are also based on
-        this paper: kappa, kappa_sq and eta.
-        Eta is drawn from a Standard Gaussian distribution.
-    
+        Gillespie, D. T. (1996). Exact numerical simulation of the
+        Ornstein-Uhlenbeck process and its integral. *Physical Review E*,
+        54(2), 2084.
     """
     RNG_ = np.random.default_rng(seed=key)
     

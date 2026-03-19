@@ -30,15 +30,36 @@ from scipy.signal import find_peaks
 
 
 def get_analysis_function(what: str = 'mini_sta'):
-    """Return the analysis function based on the input."""
+    """Return the analysis function matching the given type name.
+
+    Args:
+        what: Analysis type identifier. Defaults to ``'mini_sta'``.
+
+    Returns:
+        The callable analysis function.
+
+    Raises:
+        ValueError: If ``what`` is not a recognised analysis type.
+    """
     if what == 'mini_sta':
         return minimal_spike_train_analysis
     else:
         raise ValueError(f"Unknown analysis type: {what}")
 
 
-def set_analysis_parameters(what: str = 'mini_sta', **kwargs):
-    """Creates/Parses the relevant parameters for the analysis."""
+def set_analysis_parameters(what: str = 'mini_sta', **kwargs) -> dict:
+    """Extract and normalise parameters for the specified analysis type.
+
+    Args:
+        what: Analysis type identifier. Defaults to ``'mini_sta'``.
+        **kwargs: Must contain ``analysis`` and ``sampling_rate`` keys.
+
+    Returns:
+        Dictionary of keyword arguments for the analysis function.
+
+    Raises:
+        ValueError: If ``what`` is not a recognised analysis type.
+    """
     if what == 'mini_sta':
         time_btw2spikes = kwargs['analysis']['fraction_min_spike_distance']
         time_btw2spikes *= kwargs['analysis']['refractory_period']
@@ -66,27 +87,37 @@ def minimal_spike_train_analysis(
     visualise: bool = False,
     **kwargs
     ) -> plt.figure:
-    """Minimal Spike Train Analysis of Patch Clamp Data.
-    
-    This function takes a numpy voltage trace as input.
-    This function does not handle any I/O operations.
-    
-    CV and LvR adapted from: 
-        https://gist.github.com/fschwar4/8e9044273716cfea5a76653daeb0d170
+    """Perform a minimal spike train analysis on patch clamp data.
+
+    Detects spikes via :func:`scipy.signal.find_peaks`, then computes
+    mean firing rate (MFR), coefficient of variation (CV) and local
+    variation ratio (LvR). Does not handle any I/O operations.
+
+    CV and LvR adapted from
+    https://gist.github.com/fschwar4/8e9044273716cfea5a76653daeb0d170
 
     Args:
-        x_time (np.ndarray): time array
-        sweep_trace (np.ndarray): voltage trace
-        refractory_period (float, optional): refractory period for LvR calculation. Defaults to 0.001.
-        min_spike_height (float, optional): minimum spike height for peak detection in mV. Defaults to -5.
-        min_spike_distance (int, optional): minimum spike distance for peak detection in samples. Defaults to 10.
-        sampling_rate (int, optional): sampling rate in Hz. Defaults to 50_000.
-        visualise (bool, optional): whether to visualise the results. Defaults to False.
-        sweep_number (int, optional): sweep number. Defaults to 0.
-        out_file_path (str, optional): file path for saving the figure. Defaults to '.'.
-        
+        x_time: Time array in seconds.
+        sweep_trace: Voltage trace in mV.
+        refractory_period: Refractory period for the LvR calculation
+            in seconds.
+        min_spike_height: Minimum spike height for peak detection in mV.
+        min_spike_distance: Minimum distance between spikes in samples.
+        sampling_rate: Sampling rate in Hz.
+        sweep_number: Index of the sweep being analysed.
+        visualise: Whether to create a 3-panel figure with trace,
+            ISI histogram and spike snippets. Defaults to False.
+        **kwargs: Additional visualisation parameters (e.g.
+            ``trace_start``, ``trace_duration``, ``isi_bin_max``,
+            ``isi_bin_width``, ``interval_before_peak``,
+            ``interval_after_peak``, ``snippet_ylim``).
+
     Returns:
-        tuple: mean firing rate, coefficient of variation, local variation ratio
+        A matplotlib Figure if ``visualise`` is True, otherwise None.
+
+    Warns:
+        UserWarning: When fewer than 3 spikes are detected, as some
+            metrics cannot be computed.
     """
     # find peaks with most basic algorithm; TODO: can be improved in the future
     peaks_ = find_peaks(sweep_trace, height=min_spike_height, distance=min_spike_distance)[0]
