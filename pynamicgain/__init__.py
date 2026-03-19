@@ -21,7 +21,7 @@ To avoid having an util module, functions used by multiple modules are stored he
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-__version__ = '0.0.9'
+__version__ = '0.0.10'
 
 
 import os
@@ -50,9 +50,8 @@ def config_header(read_configs: dict) -> str:
 
     Since tomli_w does not support comments, the header is created manually.
     
-    Some configuration information (e.g. the setup id) is already stored in the
-    header. Already stored in the header and will therefore be read from the
-    current configurations.
+    Some configuration information (e.g. the setup id) is already stored in
+    the header and will therefore be read from the current configurations.
 
     Args:
         read_configs (dict): The current configurations saved as dict.
@@ -78,7 +77,7 @@ def config_header(read_configs: dict) -> str:
     return header
 
 
-def read_setup_configs(setup_dir: str) -> dict:
+def read_setup_configs(setup_dir: str) -> tuple[str, dict]:
     """Reads the setup configuration file and returns the configurations as dict.
     
     First, searches for the setup file in the given directory. Then, reads the
@@ -88,11 +87,10 @@ def read_setup_configs(setup_dir: str) -> dict:
         setup_dir (str): The directory where the setup file is stored.
         
     Returns:
-        dict: The configurations stored in the setup file.
+        tuple[str, dict]: A tuple of the setup file path and the configurations dict.
     """
     setup_file = [f for f in os.listdir(setup_dir) if f.startswith('setup_')]
-    assert len(setup_file) <= 1, "ABORT: Multiple or no setup files found!"
-    assert len(setup_file) > 0, "ABORT: No setup file found!"
+    assert len(setup_file) == 1, f"ABORT: Expected exactly one setup file, found {len(setup_file)}!"
     
     setup_file = os.path.join(setup_dir, setup_file[0])
     with open(setup_file, 'rb') as f:
@@ -369,7 +367,7 @@ class PyDGAnalysis(PyDGBase):
             automatically. The sweep data is stored in `abf.sweepY`. All sweeps are
             stored in `abf.sweepList`.
         """
-        only_filename = file2analyse.rsplit('/', 1)[1].rsplit('.', 1)[0]
+        only_filename = os.path.splitext(os.path.basename(file2analyse))[0]
         if len(self.sweeps2analyse) == self.n_sweeps:
             print(f'\nStarting analysis of {only_filename} ...\n')
             self._fig_list = []

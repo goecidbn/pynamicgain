@@ -1,15 +1,15 @@
-Metadata-Version: 2.1
+Metadata-Version: 2.4
 Name: PynamicGain
 Version: 0.0.9
 Summary: Dynamic Gain input generation for distributed PClamp setups.
 Author: Andreas Neef, Stefan Pommer
 Author-email: Friedrich Schwarz <friedrichschwarz@unigoettingen.de>
 Maintainer-email: Friedrich Schwarz <friedrichschwarz@unigoettingen.de>
-Project-URL: Repository, https://github.com/fschwar4/pynamicgain
-Project-URL: Documentation, https://fschwar4.github.io/pynamicgain/
-Project-URL: Homepage, https://fschwar4.github.io/pynamicgain/
-Project-URL: Bug Tracker, https://github.com/fschwar4/pynamicgain/issues
-Project-URL: Changelog, https://github.com/fschwar4/pynamicgain/blob/main/CHANGELOG.md
+Project-URL: Repository, https://github.com/goecidbn/pynamicgain
+Project-URL: Documentation, https://goecidbn.github.io/pynamicgain/
+Project-URL: Homepage, https://goecidbn.github.io/pynamicgain/
+Project-URL: Bug Tracker, https://github.com/goecidbn/pynamicgain/issues
+Project-URL: Changelog, https://github.com/goecidbn/pynamicgain/blob/main/CHANGELOG.md
 Keywords: neuroscience,electrophysiology,patch clamp,scientific software,data analysis,dynamic gain
 Classifier: Programming Language :: Python :: 3 :: Only
 Classifier: License :: OSI Approved :: GNU Affero General Public License v3
@@ -37,6 +37,7 @@ Requires-Dist: sphinx-autodoc-typehints; extra == "docs"
 Provides-Extra: interactive
 Requires-Dist: jupyterlab; extra == "interactive"
 Requires-Dist: ipykernel; extra == "interactive"
+Dynamic: license-file
 
 # Pynamic Gain
 
@@ -59,5 +60,5 @@ Verify the installation with:
 pydg_help
 ```
 
-See the [documentation](https://fschwar4.github.io/pynamicgain/) for more information.
+See the [documentation](https://goecidbn.github.io/pynamicgain/) for more information.
 

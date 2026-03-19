@@ -59,7 +59,7 @@ html_context = {
 }
 html_theme_options = {
     "icon_links": [
-        {"name": "GitHub", "url": "https://github.com/fschwar4/pynamicgain", "icon": "fab fa-github"},
+        {"name": "GitHub", "url": "https://github.com/goecidbn/pynamicgain", "icon": "fab fa-github"},
     ],
     "primary_sidebar_end": ["navbar-icon-links"],
     "show_nav_level": 3,  # Adjust based on your needs

@@ -19,5 +19,5 @@ Verify the installation with:
 pydg_help
 ```
 
-See the [documentation](https://fschwar4.github.io/pynamicgain/) for more information.
+See the [documentation](https://goecidbn.github.io/pynamicgain/) for more information.
 

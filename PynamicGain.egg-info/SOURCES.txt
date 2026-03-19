@@ -13,4 +13,4 @@ pynamicgain/analysis.py
 pynamicgain/new_setup.py
 pynamicgain/stimulus_generation.py
 pynamicgain/default_configs/default_configs.toml
-pynamicgain/default_configs/matploltlib.mplstyle
+pynamicgain/default_configs/matplotlib.mplstyle

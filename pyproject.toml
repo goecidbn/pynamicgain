@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "PynamicGain"
-version = "0.0.9"
+version = "0.0.10"
 requires-python = ">=3.11"
 dependencies = [
   "pandas",
@@ -56,11 +56,11 @@ pydg_help = "pynamicgain.__main__:help"
 
 
 [project.urls]
-Repository = "https://github.com/fschwar4/pynamicgain"
-Documentation = "https://fschwar4.github.io/pynamicgain/"
-Homepage  = "https://fschwar4.github.io/pynamicgain/"
-"Bug Tracker" = "https://github.com/fschwar4/pynamicgain/issues"
-Changelog = "https://github.com/fschwar4/pynamicgain/blob/main/CHANGELOG.md"
+Repository = "https://github.com/goecidbn/pynamicgain"
+Documentation = "https://goecidbn.github.io/pynamicgain/"
+Homepage  = "https://goecidbn.github.io/pynamicgain/"
+"Bug Tracker" = "https://github.com/goecidbn/pynamicgain/issues"
+Changelog = "https://github.com/goecidbn/pynamicgain/blob/main/CHANGELOG.md"
 
 
 [project.optional-dependencies]
@@ -88,5 +88,5 @@ include-package-data = true
 [tool.setuptools.package-data]
 "pynamicgain.default_configs" = [
   "default_configs.toml",
-  "matploltlib.mplstyle",
+  "matplotlib.mplstyle",
 ]

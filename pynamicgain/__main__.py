@@ -1,13 +1,13 @@
 """Main module for the PynamicGain package.
 
-The following docopt code is only used for pdyg_generate, pydg_analyse,
+The following docopt code is only used for pydg_generate, pydg_analyse,
 pydg_generate_analyse. Please note that pynamicgain is only a pattern
 placeholder. The actual entry point is defined via setuptools. It is not used
 for pydg_new_setup and pydg_help as these functions do not require command line
 arguments.
 
 Usage:
-    pynamicgain [<std>] [<corr_t>] [--setup_dir=<sudir>] [--n_sweeps=<ns>] [--duration=<dt>] [--out_dir=<od>] [--input_dir=<pd>] [--sampling_rate=<sr>] [--visualise=<v>] [--analyse_file=<af>] [--backup_dir=<bd>]
+    pynamicgain [<std>] [<corr_t>] [--setup_dir=<sudir>] [--n_sweeps=<ns>] [--duration=<dt>] [--out_dir=<od>] [--input_dir=<pd>] [--sampling_rate=<sr>] [--visualise=<v>] [--analyse_file=<af>] [--backup_dir=<bd>] [--analyse_dir=<ad>]
 
 Options:
     -h --help     Show this screen.
@@ -47,6 +47,7 @@ Arguments:
 
 
 import os
+from datetime import datetime as dt
 from typing import Optional
 
 import docopt
@@ -55,7 +56,7 @@ from pynamicgain import PyDG, PyDGAnalysis
 
 
 def get_cli_args():
-    """Wrapper aroubd docopt to get the CLI arguments."""
+    """Wrapper around docopt to get the CLI arguments."""
     kwargs = docopt.docopt(__doc__)  # read
     
     # modify kwargs (remove -- and </> from keys)
@@ -110,7 +111,7 @@ def generate(only_generate: bool = True):
         return _timestamp
 
 
-def analyse(start_time: Optional[float] = None):
+def analyse(start_time: Optional[dt] = None):
     cl_args = get_cli_args()
     myPDGA = PyDGAnalysis(cl_args, start_time)
     if start_time:
@@ -156,7 +157,7 @@ def help():
         '  pydg_help               Show this help message.\n'
         '\n'
         'Please report bugs to <friedrichschwarz@unigoettingen.de>.\n'
-        'PynamicGain homepage: <https://github.com/fschwar4/pynamicgain>.\n\n'
+        'PynamicGain homepage: <https://github.com/goecidbn/pynamicgain>.\n\n'
     )
 
 

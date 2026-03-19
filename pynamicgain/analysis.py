@@ -22,6 +22,8 @@ However, this can be extended to more complex analysis in the future.
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
+import warnings
+
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.signal import find_peaks
@@ -87,20 +89,35 @@ def minimal_spike_train_analysis(
         tuple: mean firing rate, coefficient of variation, local variation ratio
     """
     # find peaks with most basic algorithm; TODO: can be improved in the future
-    peaks_ = find_peaks(sweep_trace, height = min_spike_height, distance = min_spike_distance)[0]
+    peaks_ = find_peaks(sweep_trace, height=min_spike_height, distance=min_spike_distance)[0]
     peak_times = x_time[peaks_]
-    
-    # calculate mean firing, ISI and CV
-    mfr = len(peak_times)/x_time[-1]
-    isi = np.diff(peak_times)
-    cv = np.std(isi)/np.mean(isi)
-    
-    # LvR calculation
-    s_ = 3 / (len(isi) - 1)
-    si_ = isi[:-1] + isi[1:]
-    ft_ = 1 - ((4 * (isi[:-1] * isi[1:])) / si_**2)
-    st_ = 1 + ((4 * refractory_period) / si_)
-    lvR = s_ * np.sum(ft_ * st_)
+    n_spikes = len(peak_times)
+
+    # calculate mean firing rate
+    mfr = n_spikes / x_time[-1]
+
+    if n_spikes < 2:
+        isi = np.array([])
+        cv = np.nan
+        lvR = np.nan
+        if n_spikes == 0:
+            warnings.warn(f"Sweep {sweep_number}: No spikes detected.")
+        else:
+            warnings.warn(f"Sweep {sweep_number}: Only 1 spike detected. CV and LvR cannot be computed.")
+    elif n_spikes == 2:
+        isi = np.diff(peak_times)
+        cv = np.std(isi) / np.mean(isi)
+        lvR = np.nan
+        warnings.warn(f"Sweep {sweep_number}: Only 2 spikes detected. LvR cannot be computed.")
+    else:
+        isi = np.diff(peak_times)
+        cv = np.std(isi) / np.mean(isi)
+        # LvR calculation
+        s_ = 3 / (len(isi) - 1)
+        si_ = isi[:-1] + isi[1:]
+        ft_ = 1 - ((4 * (isi[:-1] * isi[1:])) / si_**2)
+        st_ = 1 + ((4 * refractory_period) / si_)
+        lvR = s_ * np.sum(ft_ * st_)
     
     if visualise == True:
         _bp = int(kwargs['interval_before_peak'] * sampling_rate)  # data points before peak
@@ -130,20 +147,22 @@ def minimal_spike_train_analysis(
         axs[1].set_ylabel('Count')
 
         snip_idx = []
-        for tp in peaks_:
-            _idx = np.arange(
-                max([0, tp-_bp-1]),  # not before the start
-                min([len(sweep_trace), tp+_ap]),  # not after the end
-                dtype=np.int32).ravel()
-            if len(_idx) != _snippet_length:  # skip spikes at the boarders
-                continue
-            snip_idx.append(_idx)
-        snip_idx = np.concatenate(snip_idx)
+        if len(peaks_) > 0:
+            for tp in peaks_:
+                _idx = np.arange(
+                    max([0, tp-_bp-1]),  # not before the start
+                    min([len(sweep_trace), tp+_ap]),  # not after the end
+                    dtype=np.int32).ravel()
+                if len(_idx) != _snippet_length:  # skip spikes at the borders
+                    continue
+                snip_idx.append(_idx)
 
-        snippets = sweep_trace[snip_idx].reshape(-1, _snippet_length)
-        _xtime = np.arange(_snippet_length) / sampling_rate * 1e3
-        
-        axs[2].plot(_xtime, snippets.T, color = 'black', alpha = 0.1, linewidth = 0.75)
+        if len(snip_idx) > 0:
+            snip_idx = np.concatenate(snip_idx)
+            snippets = sweep_trace[snip_idx].reshape(-1, _snippet_length)
+            _xtime = np.arange(_snippet_length) / sampling_rate * 1e3
+            axs[2].plot(_xtime, snippets.T, color='black', alpha=0.1, linewidth=0.75)
+
         axs[2].text(0.85, 0.85, f'MFR: {mfr:.2f} Hz\nCV: {cv:.2f}\nLvR: {lvR:.2f}')
         axs[2].set_title('Spike Snippets')
         axs[2].set_xlabel('Time (ms)')

@@ -105,7 +105,7 @@ def exact_ou_process(
     
     Parameters:
         duration (int): Duration of the simulation in seconds.
-        time_step (float): Duration of one time step of the simulation.
+        dt (float): Duration of one time step of the simulation.
         mu (float): Average input strength.
         fluctuation_size (float): The size of the process' fluctuation.
         input_correlation (float): The correlation time of the input in

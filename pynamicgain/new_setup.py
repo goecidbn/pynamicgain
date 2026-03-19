@@ -43,14 +43,14 @@ def ask_set_input(question: str, prompt: str, _assert: callable = None):
             c_ += 1
             continue
         if _ifp.lower() == 'y':
-            while True:
+            while c_ < 5:
                 _input = input(f'\t{prompt}: ')
                 _input = _input.strip()
-                if _assert:
-                    c_ += 1
+                if _assert and _assert(_input):
                     break
                 else:
                     print("Invalid input.")
+                    c_ += 1
         break
     
     if c_ == 5:
