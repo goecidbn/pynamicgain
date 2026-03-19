@@ -1,0 +1,828 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Answers for PynamicGain &#8212; Pynamic Gain</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=f7cdbf68"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'explanations/SMPR';</script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.0.9" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Pynamic Gain</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="first_steps.html">
+    First Steps
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="usage.html">
+    Usage
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="motivations.html">
+    Motivations
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api_documentation.html">
+    API Documentation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="deep_settings.html">
+    Advanced
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><!-- docs/_templates/version.html -->
+
+
+<div class="version">
+  <strong>Version:</strong> 0.0.9
+</div>
+</div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/fschwar4/pynamicgain" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="first_steps.html">
+    First Steps
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="usage.html">
+    Usage
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="motivations.html">
+    Motivations
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api_documentation.html">
+    API Documentation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="deep_settings.html">
+    Advanced
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><!-- docs/_templates/version.html -->
+
+
+<div class="version">
+  <strong>Version:</strong> 0.0.9
+</div>
+</div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/fschwar4/pynamicgain" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="first_steps.html">
+    First Steps
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="usage.html">
+    Usage
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="motivations.html">
+    Motivations
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api_documentation.html">
+    API Documentation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="deep_settings.html">
+    Advanced
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="development.html">
+    Development
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/fschwar4/pynamicgain" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Answers for <em>PynamicGain</em></span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="answers-for-pynamicgain">
+<h1>Answers for <em>PynamicGain</em><a class="headerlink" href="#answers-for-pynamicgain" title="Link to this heading">#</a></h1>
+<section id="general">
+<h2>General<a class="headerlink" href="#general" title="Link to this heading">#</a></h2>
+<section id="topic">
+<h3>Topic<a class="headerlink" href="#topic" title="Link to this heading">#</a></h3>
+<p><strong>What is the title of the software project?</strong></p>
+<p>PynamicGain</p>
+<p><strong>Which research field(s) does this software belong to?</strong></p>
+<p>Life Sciences / Neurosciences</p>
+<p><strong>What is the intended use of the software? How will your software
+contribute to research?</strong></p>
+<p>Pynamic Gain is a Python package that facilitates the creation and
+analysis of Dynamic Gain calculations across multiple distributed
+setups. It serves three main purposes: Distributed setup management:
+Maintain an overview of setups and seeds used to ensure reproducibility
+and uniqueness of stimuli across multiple setups. Create Input Stimuli:
+Create input stimuli for subsequent dynamic gain calculation. Online
+Analysis: Perform real-time analysis of stimulated recordings to
+identify appropriate analysis windows for dynamic gain calculation. In
+the future, this package will also include the dynamic gain calculation
+itself.</p>
+<p><strong>What function does the new software have that previous software does
+not cover? What related software exists and why is it not suitable?</strong></p>
+<ul class="simple">
+<li><p>create and manage multiple distributed setups ensuring different input
+data over all setups - provide help/intuition for dynamic gain patch
+clamp measurements</p></li>
+</ul>
+</section>
+<section id="software-project-partner-s">
+<h3>Software Project Partner(s)<a class="headerlink" href="#software-project-partner-s" title="Link to this heading">#</a></h3>
+<p><strong>Who are the project participants that deal with this software?</strong></p>
+<ul class="simple">
+<li><p>Institut für Neuroanatomie, Universität Göttingen</p></li>
+<li><p>Neuronex Project 170</p></li>
+</ul>
+<p><strong>Is there existing (financial/personnel) resources or will there be
+specific funding for the software development?</strong></p>
+<p>Neuronex, Project 170: The Fabric of the Primate Neocortex and the
+Origin of Mental Representations Ministry for Science and Culture of
+Lower Saxony (MWK)</p>
+</section>
+<section id="software-project-schedule">
+<h3>Software Project Schedule<a class="headerlink" href="#software-project-schedule" title="Link to this heading">#</a></h3>
+<p><strong>When does the software project start?</strong></p>
+<p>April 1, 2024</p>
+<p><strong>When does the software project end?</strong></p>
+<p>July 31, 2025</p>
+</section>
+<section id="software-project-management">
+<h3>Software Project Management<a class="headerlink" href="#software-project-management" title="Link to this heading">#</a></h3>
+<p><strong>Which software development process is defined? How will process roles
+be assigned?</strong></p>
+<p>No special development progress. New needs are developed in team
+meetings between the developer and tester. Developer: Friedrich Schwarz
+Tester: Andreas Neef, Stefan Pommer</p>
+<p><strong>How do you track the different tasks and use cases?</strong></p>
+<ul class="simple">
+<li><p>GitHub</p></li>
+<li><p>Internal Notes</p></li>
+</ul>
+<p><strong>Will there be a specification document (briefly) outlining the most
+important requirements?</strong></p>
+<p>Yes</p>
+</section>
+<section id="software-development-requirements">
+<h3>Software Development Requirements<a class="headerlink" href="#software-development-requirements" title="Link to this heading">#</a></h3>
+<p><strong>Are there institutional requirements for software development?</strong></p>
+<p>Publication of the Software.</p>
+<p><strong>Are there requirements regarding the software development form other
+parties?</strong></p>
+<p>No.</p>
+</section>
+</section>
+<section id="technical">
+<h2>Technical<a class="headerlink" href="#technical" title="Link to this heading">#</a></h2>
+<section id="code">
+<h3>Code<a class="headerlink" href="#code" title="Link to this heading">#</a></h3>
+<p><strong>Which programming language(s) do you plan to use?</strong></p>
+<p>Python</p>
+<p><strong>Which technology or process is used for versioning?</strong></p>
+<p>Git (GitHub.com)</p>
+</section>
+<section id="third-party-components-and-libraries">
+<h3>Third Party Components and Libraries<a class="headerlink" href="#third-party-components-and-libraries" title="Link to this heading">#</a></h3>
+<p><strong>Which external software components will be used? What dependencies on
+software libraries do exist? How do you document this?</strong></p>
+<p>Dependencies of I/O libraries for proprietary recording set-up file
+formats. Currently used: PyABF (https://github.com/swharden/pyABF)</p>
+<p><strong>What licences are on the third-party software components?</strong></p>
+<p>PyABF (https://github.com/swharden/pyABF): MIT Licence</p>
+<p><strong>What is the process to keep track of the external software components?
+Can critical dependencies be eliminated or mitigated?</strong></p>
+<p>PyABF can be forked from GitHub and incorporated, if necessary.</p>
+<p><strong>Do you plan to use third party web services?</strong></p>
+<p>No.</p>
+<p><strong>Does the software refer to other software projects or objects?</strong></p>
+<p>No.</p>
+</section>
+<section id="infrastructure">
+<h3>Infrastructure<a class="headerlink" href="#infrastructure" title="Link to this heading">#</a></h3>
+<p><strong>What infrastructure resources are needed? To what extent?</strong></p>
+<ul class="simple">
+<li><p>GitHub (online) - PyPI (online) - local computer to run the software.</p></li>
+</ul>
+<p><strong>Is there already existing infrastructure for the software development?
+Where is the infrastructure hosted?</strong></p>
+<p>Hosted on standard websites (GitHub and PyPI)</p>
+<p><strong>Are there technical aspects where competences are (still) lacking, so
+that support would be helpful?</strong></p>
+<p>Help via the developer.</p>
+</section>
+<section id="preservation">
+<h3>Preservation<a class="headerlink" href="#preservation" title="Link to this heading">#</a></h3>
+<p><strong>How long should the software remain usable? What steps will be taken
+to ensure that the software can continue to be used after the project?</strong></p>
+<p><strong>Does this software have to be preserved for a longer term?</strong></p>
+<p>10 years for academic project storage.</p>
+</section>
+<section id="security">
+<h3>Security<a class="headerlink" href="#security" title="Link to this heading">#</a></h3>
+<p><strong>Which measures or provisions are in place to ensure software
+security?</strong></p>
+<p>2F-Authentification for changes in GitHub., otherwise no special
+measures implemented.</p>
+<p><strong>What measures do you take to minimise risks in relation to software
+development?</strong></p>
+<p>Online GitHub usage to prevent project loss.</p>
+</section>
+</section>
+<section id="quality-assurance">
+<h2>Quality Assurance<a class="headerlink" href="#quality-assurance" title="Link to this heading">#</a></h2>
+<section id="governance-and-defined-processes">
+<h3>Governance and Defined Processes<a class="headerlink" href="#governance-and-defined-processes" title="Link to this heading">#</a></h3>
+<p><strong>Do you have a governance model for the software development?</strong></p>
+<p>Motivation and Requirements page within the documentation.</p>
+<p><strong>Do you apply specific coding standards? How do you take care about
+code quality control?</strong></p>
+<p>It is planned to use code linting and automated code formatting.
+Google-type Docstrings are used within the project.</p>
+</section>
+<section id="documentation">
+<h3>Documentation<a class="headerlink" href="#documentation" title="Link to this heading">#</a></h3>
+<p><strong>How is software documentation created?</strong></p>
+<p>The software documentation is automatically created using Sphinx and
+GitHub Pages. This in integrated in a CI/CD workflow for each GitHub
+push.</p>
+<p><strong>Where will the documentation be stored or made available? Which
+language will be used?</strong></p>
+<p>The documentation is available on
+https://fschwar4.github.io/pynamicgain/. It is publicly available and
+written in English.</p>
+</section>
+<section id="testing">
+<h3>Testing<a class="headerlink" href="#testing" title="Link to this heading">#</a></h3>
+<p><strong>Which software test strategy are you going to follow? Which types of
+tests are planned for the project?</strong></p>
+<p>Unit and Integration test will be implemented via GitHub CI/CD. This is
+currently not implemented.</p>
+<p><strong>How is testing and test documentation organised?</strong></p>
+<p>Unit and Integration test will be implemented via GitHub CI/CD. This is
+currently not implemented.</p>
+</section>
+</section>
+<section id="release-and-publish">
+<h2>Release and Publish<a class="headerlink" href="#release-and-publish" title="Link to this heading">#</a></h2>
+<section id="releasing">
+<h3>Releasing<a class="headerlink" href="#releasing" title="Link to this heading">#</a></h3>
+<p><strong>Are there defined release processes for the software?</strong></p>
+<p>No.</p>
+<p><strong>What is the decision process for releasing? How often will a software
+version be released?</strong></p>
+<p>Internal decision for releasing the software. Mayor updates after
+internal testing. Otherwise the software will be updated, whenever
+needed; e.g., error correction.</p>
+<p><strong>Where will the software be stored? Does the storage place have a clear
+preservation policy?</strong></p>
+<p>Major software releases will be added to Zenodo. In the future we might
+decide to store software releases used in publications also in re3data.</p>
+</section>
+<section id="publicly-availability">
+<h3>Publicly Availability<a class="headerlink" href="#publicly-availability" title="Link to this heading">#</a></h3>
+<p><strong>Will this software be publicly available?</strong></p>
+<p>Yes</p>
+<p><strong>In which repository or archive will the software be held? How easy can
+it be found? What strategy is used to keep the software usable?</strong></p>
+<p>The software will be held on GitHub.com . As the repository there is
+publicly available it should be easy to find. Publications are aimed to
+be Open-Access. There are no specific strategies in place to keep the
+software usable.</p>
+<p><strong>Will users have the possibility to contribute to your software?</strong></p>
+<p>All users should be able to contribute, as long as their contribution
+helps the research project and question.</p>
+<p><strong>Is (Open) Peer Review planned for the software?</strong></p>
+<p>Open Peer Review is not specifically planned. However, the code can be
+openly accessed, reviews can be done, whenever wanted.</p>
+</section>
+<section id="metadata">
+<h3>Metadata<a class="headerlink" href="#metadata" title="Link to this heading">#</a></h3>
+<p><strong>How do you assign metadata for your software?</strong></p>
+<p>Basic metadata is demanded when a setup is created. Basic metadata is
+tracked and written, when the software is used. Users are invited to
+provide their metadata to the developer team for central storage.</p>
+<p><strong>Do you give a persistent identifier for you software?</strong></p>
+<p>A Zenodo DOI is aimed for every major release.</p>
+</section>
+<section id="support">
+<h3>Support<a class="headerlink" href="#support" title="Link to this heading">#</a></h3>
+<p><strong>Do you plan to give support or help to re-users of your software?</strong></p>
+<p>Yes</p>
+<p><strong>How do you organise the support and feedback process with other
+users?</strong></p>
+<p>Via personal contact, as the number of collaborators should be limited.</p>
+<p><strong>Does your Software Management Plan relate to other Software/Data
+Management Plans?</strong></p>
+<p>Not yet. Maybe in the future.</p>
+<p><strong>Do you intend to make your software management plan publicly available
+(later)?</strong></p>
+<p>Yes: https://fschwar4.github.io/pynamicgain/explanations/SMPR.html</p>
+</section>
+</section>
+<section id="legal-and-ethics">
+<h2>Legal and Ethics<a class="headerlink" href="#legal-and-ethics" title="Link to this heading">#</a></h2>
+<section id="intellectual-property-rights">
+<h3>Intellectual Property Rights<a class="headerlink" href="#intellectual-property-rights" title="Link to this heading">#</a></h3>
+<p><strong>What is the legal ownership of the software?</strong></p>
+<p>The developer.</p>
+<p><strong>Does the project use and/or produce software that is protected by
+third party intellectual or industrial property rights?</strong></p>
+<p>The software is published under the AGPL-3.0 license. This is also
+stated at GitHub.</p>
+</section>
+<section id="license">
+<h3>License<a class="headerlink" href="#license" title="Link to this heading">#</a></h3>
+<p><strong>Under what kind of license(s) will the software be published?</strong></p>
+<p>AGPL-3.0 license</p>
+</section>
+<section id="dual-use">
+<h3>Dual Use<a class="headerlink" href="#dual-use" title="Link to this heading">#</a></h3>
+<p><strong>Can the software also be used for military purposes?</strong></p>
+<p>No.</p>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#general">General</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#topic">Topic</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#software-project-partner-s">Software Project Partner(s)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#software-project-schedule">Software Project Schedule</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#software-project-management">Software Project Management</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#software-development-requirements">Software Development Requirements</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#technical">Technical</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#code">Code</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#third-party-components-and-libraries">Third Party Components and Libraries</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#infrastructure">Infrastructure</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#preservation">Preservation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#security">Security</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quality-assurance">Quality Assurance</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#governance-and-defined-processes">Governance and Defined Processes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#documentation">Documentation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#testing">Testing</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#release-and-publish">Release and Publish</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#releasing">Releasing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#publicly-availability">Publicly Availability</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metadata">Metadata</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#support">Support</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#legal-and-ethics">Legal and Ethics</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#intellectual-property-rights">Intellectual Property Rights</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#license">License</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dual-use">Dual Use</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/explanations/SMPR.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Friedrich Schwarz, Stefan Pommer, Andreas Neef.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

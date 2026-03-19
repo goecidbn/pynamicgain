@@ -9,29 +9,29 @@ pynamicgain.analysis module
 
 .. automodule:: pynamicgain.analysis
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 pynamicgain.new\_setup module
 -----------------------------
 
 .. automodule:: pynamicgain.new_setup
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 pynamicgain.stimulus\_generation module
 ---------------------------------------
 
 .. automodule:: pynamicgain.stimulus_generation
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: pynamicgain
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
