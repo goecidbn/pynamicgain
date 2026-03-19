@@ -26,7 +26,7 @@ A setup configuration file has four main sections:
 | `version` | string | current release | Package version that created the file. **Do not change.** |
 | `master_seed` | int | fixed | Global seed for the PCG64DXSM generator. **Do not change.** |
 | `n_seeds_per_setup` | int | 1 000 000 | Number of unique seeds allocated per setup. **Do not change.** |
-| `current_seed_index` | int | 0 | Tracks how many seeds have been consumed. Updated automatically. |
+| `current_seed_index` | int | 0 | Tracks how many seeds have been consumed. Updated automatically. **Informational only** — the seed CSV file is the authoritative source of truth. |
 | `setup_id` | int | — | Positive integer (1–20) identifying this setup. Must be unique across all distributed setups. |
 | `setup_info` | string | — | Short human-readable description of the setup. |
 | `config_file_creator` | string | — | Name of the person who created this configuration. |
@@ -83,7 +83,9 @@ These settings only take effect when `visualise_results = true`.
 |-----|------|---------|-------------|
 | `wait_time` | int | `30` | Seconds to wait between stimulus generation and the start of analysis, giving the acquisition software time to save the recording. |
 | `update_interval` | int | `5` | Seconds between successive checks for new recording files during online analysis. |
+| `observation_buffer` | int | `180` | Extra seconds added to the expected recording duration before the observation mode times out. Increase this if recordings take longer than expected. |
 | `input_units` | string | `"pA"` | Physical unit of the generated stimulus. Currently fixed to picoamperes. |
+| `log_level` | string | `"INFO"` | Controls the verbosity of PynamicGain's console output. One of `"DEBUG"`, `"INFO"`, `"WARNING"`, `"ERROR"`, `"CRITICAL"`. |
 
 ---
 

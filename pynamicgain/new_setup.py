@@ -21,9 +21,11 @@ Please run this script to generate a new setup configuration file.
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
+import logging
 import os
 import time
 from importlib.resources import open_binary
+from typing import Callable, Optional
 
 import pandas as pd
 import tomli
@@ -31,8 +33,14 @@ import tomli_w
 
 from pynamicgain import config_header, __version__
 
+logger = logging.getLogger(__name__)
 
-def ask_set_input(question: str, prompt: str, _assert: callable = None):
+
+def ask_set_input(
+    question: str,
+    prompt: str,
+    _assert: Optional[Callable[[str], bool]] = None,
+) -> Optional[str]:
     """Prompt the user with a yes/no question and optionally collect input.
 
     If the user answers *yes*, they are asked for a value that is
@@ -71,12 +79,12 @@ def ask_set_input(question: str, prompt: str, _assert: callable = None):
                     print("Invalid input.")
                     c_ += 1
         break
-    
+
     if c_ == 5:
         raise RuntimeError("Too many invalid inputs.")
-    
+
     return _input if _input else None
-        
+
 
 def initiate_new_setup() -> None:
     """Interactively create a new setup configuration file for DG on pClamp.
@@ -96,42 +104,53 @@ def initiate_new_setup() -> None:
     are written to the specified save path.
 
     Raises:
-        AssertionError: If the setup id, description, creator, or save
+        ValueError: If the setup id, description, creator, or save
             path are invalid.
         FileExistsError: If a configuration file for the given setup id
             already exists at the save path.
     """
     print('\nWelcome to the setup configuration file generator.')
-    
-    # get setup id and description from user
-    setup_id = int(input("Please enter setup id: "))  # user input
-    assert 0 < setup_id <= 20, "setup id must be between 1 and 20"  # might be changed in the future
 
-    setup_info = input("Please enter short setup description: ")  # user input
+    # get setup id and description from user
+    try:
+        setup_id = int(input("Please enter setup id: "))
+    except ValueError:
+        raise ValueError("Setup id must be an integer.")
+
+    if not (0 < setup_id <= 20):
+        raise ValueError(
+            f"Setup id must be between 1 and 20, got {setup_id}. "
+            f"If you need more setups, contact the developer."
+        )
+
+    setup_info = input("Please enter short setup description: ")
     setup_info = setup_info.strip()
-    assert len(setup_info) > 0, "setup description must not be empty"
-    
-    setup_creator = input('Please enter your name: ')  # user input
+    if len(setup_info) == 0:
+        raise ValueError("Setup description must not be empty.")
+
+    setup_creator = input('Please enter your name: ')
     setup_creator = setup_creator.strip()
-    assert len(setup_creator) > 0, "setup creator must not be empty"
-    
+    if len(setup_creator) == 0:
+        raise ValueError("Setup creator must not be empty.")
+
     output_dir = ask_set_input(
-        'Do you want to set an output path?', 
-        'Please enter the output path', 
+        'Do you want to set an output path?',
+        'Please enter the output path',
         lambda x: len(x) > 0
     )
 
     input_dir = ask_set_input(
-        'Do you want to set an input path (for the patch clamp recordings)?', 
+        'Do you want to set an input path (for the patch clamp recordings)?',
         'Please enter the input path',
         lambda x: len(x) > 0
     )
-        
-    save_path = input('\nPlease enter the path where the setup configuration file will be saved: ')  # user input
+
+    save_path = input('\nPlease enter the path where the setup configuration file will be saved: ')
     save_path = save_path.strip()
-    assert len(save_path) > 0, "save path must not be empty"
+    if len(save_path) == 0:
+        raise ValueError("Save path must not be empty.")
     save_path = os.path.abspath(save_path)
-    
+
     print('\nSome settings may change infrequently for a given setup '
           '(e.g. sampling rate, recording time or number of sweeps).')
     while True:
@@ -139,32 +158,32 @@ def initiate_new_setup() -> None:
         if _sas.lower() in ['y', 'n']:
             break
         print("Invalid input. Please enter 'y' or 'n'.")
-        
+
     if _sas == 'y':
         sampling_rate = ask_set_input(
             'Do you want to set the sampling rate?',
-            'Please enter the sampling rate [Hz]', 
+            'Please enter the sampling rate [Hz]',
             lambda x: x.isdigit() and int(x) > 0
         )
-        
+
         n_sweeps = ask_set_input(
             'Do you want to set the number of sweeps?',
             'Please enter the number of sweeps',
             lambda x: x.isdigit() and int(x) > 0
         )
-        
+
         duration = ask_set_input(
             'Do you want to set the duration of the sweeps?',
             'Please enter the duration of the sweeps [s]',
             lambda x: x.isdigit() and int(x) > 0
         )
-        
+
         backup_dir = ask_set_input(
             'Do you want to set a backup directory (if not, it will be a subdirectory of the output directory)?',
             'Please enter the backup directory',
             lambda x: len(x) > 0
         )
-        
+
         analysis_dir = ask_set_input(
             'Do you want to set an analysis directory?',
             'Please enter the analysis directory',
@@ -177,9 +196,14 @@ def initiate_new_setup() -> None:
 
     with open_binary("pynamicgain.default_configs", "default_configs.toml") as config_file:
         setup = tomli.load(config_file)
-        
-    assert setup['version'] == __version__, "Code and Default Configurations Versions do not match!"
-        
+
+    if __version__ != "unknown" and setup['version'] != __version__:
+        raise RuntimeError(
+            f"Version mismatch: default config has version '{setup['version']}', "
+            f"but installed package is '{__version__}'. "
+            f"Please reinstall the package or update the default configuration."
+        )
+
     # update setup configuration file
     setup['setup_id'] = setup_id
     setup['setup_info'] = setup_info
@@ -193,7 +217,7 @@ def initiate_new_setup() -> None:
     setup['duration'] = float(duration) if duration else -1
     setup['backup_dir'] = backup_dir if backup_dir else ''
     setup['analysis_dir'] = analysis_dir if analysis_dir else setup['input_dir']
-    
+
     # write setup configuration file
     os.makedirs(os.path.abspath(save_path), exist_ok=True)
     save_config_path = os.path.join(save_path, f'setup_{setup_id}.toml')
@@ -202,13 +226,15 @@ def initiate_new_setup() -> None:
     with open(save_config_path, 'w') as f:
         f.write(config_header(setup))  # config file header
         f.write(tomli_w.dumps(setup))  # config file content
-        
+
+    logger.info("Created setup configuration file for setup %d.", setup_id)
     print(f'\nSuccessfully created setup configuration file for setup {setup_id}.')
-    
+
     # create seed backup file
     df_ = pd.DataFrame(columns=['seed index', 'seed', 'sweep', 'file', 'backup'])
     df_.to_csv(os.path.join(save_path, f'seed_list_setup_{setup_id}.csv'), index=False)
 
+    logger.info("Created seed backup file for setup %d.", setup_id)
     print(f'Successfully created seed backup file for setup {setup_id}.')
-    
+
     print('Initialization done. If you want to change the setup configuration file, please edit the file manually.\n')

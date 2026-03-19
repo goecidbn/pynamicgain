@@ -8,7 +8,7 @@
 # ! EVERY SETUP MUST HAVE AN OWN CONFIG FILE SPECIFYING THE SETUP NUMBER !  #
 # ========================================================================= #
 
-version = "0.0.10"  # NEVER CHANGE THIS VALUE
+version = "0.0.11"  # NEVER CHANGE THIS VALUE
 
 master_seed = 121912940104681416  # NEVER CHANGE THIS VALUE
 n_seeds_per_setup = 1_000_000  # NEVER CHANGE THIS VALUE
@@ -75,7 +75,9 @@ snippet_ylim = [-50, 30]  # Y-AXIS LIMITS FOR THE SNIPPET PLOT
 [settings]
 wait_time = 30  # TIME BETWEEN INPUT GENERATION AND START OF ANALYSIS IN SECONDS
 update_interval = 5  # TIME BETWEEN UPDATES OF THE ANALYSIS IN SECONDS
+observation_buffer = 180  # EXTRA TIME (SECONDS) AFTER EXPECTED RECORDING DURATION BEFORE TIMEOUT
 input_units = "pA"  # CURRENTLY FIXED, DO NOT CHANGE
+log_level = "INFO"  # LOGGING LEVEL: DEBUG, INFO, WARNING, ERROR, CRITICAL
 
 
 [stimulus.OU]

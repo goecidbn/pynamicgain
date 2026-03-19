@@ -11,7 +11,7 @@ Usage:
 
 Options:
     -h --help     Show this screen.
-    
+
 Arguments:
     <std>  Standard deviation of the noise.
     <corr_t>  Correlation time of the noise.
@@ -46,13 +46,57 @@ Arguments:
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
+import logging
 import os
+import sys
 from datetime import datetime as dt
 from typing import Optional
 
 import docopt
 
-from pynamicgain import PyDG, PyDGAnalysis
+from pynamicgain import PyDG, PyDGAnalysis, setup_logging
+
+logger = logging.getLogger(__name__)
+
+
+def _parse_cli_float(value: str, name: str) -> float:
+    """Convert a CLI string argument to float with a clear error message.
+
+    Args:
+        value: The raw string value from the CLI.
+        name: The argument name for the error message.
+
+    Returns:
+        The parsed float value.
+
+    Raises:
+        SystemExit: If the value cannot be converted to float.
+    """
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        print(f"Error: '--{name}' must be a number, got '{value}'.", file=sys.stderr)
+        sys.exit(1)
+
+
+def _parse_cli_int(value: str, name: str) -> int:
+    """Convert a CLI string argument to int with a clear error message.
+
+    Args:
+        value: The raw string value from the CLI.
+        name: The argument name for the error message.
+
+    Returns:
+        The parsed integer value.
+
+    Raises:
+        SystemExit: If the value cannot be converted to int.
+    """
+    try:
+        return int(value)
+    except (ValueError, TypeError):
+        print(f"Error: '--{name}' must be an integer, got '{value}'.", file=sys.stderr)
+        sys.exit(1)
 
 
 def get_cli_args() -> dict:
@@ -66,41 +110,41 @@ def get_cli_args() -> dict:
         Normalised keyword arguments ready for class instantiation.
     """
     kwargs = docopt.docopt(__doc__)  # read
-    
+
     # modify kwargs (remove -- and </> from keys)
-    kwargs ={
-        k.replace('--', '', 1).replace('<', '').replace('>', ''): v 
+    kwargs = {
+        k.replace('--', '', 1).replace('<', '').replace('>', ''): v
         for k, v in kwargs.items() if v is not None
-        }
-    
+    }
+
     # set absolute paths for cwd
     for k, v in kwargs.items():
         if 'dir' in k and v == '.':  # current directory
             kwargs[k] = os.getcwd()
-    
-    # convert to correct types
+
+    # convert to correct types with informative error messages
     if 'std' in kwargs:
-        kwargs['std'] = float(kwargs['std'])
+        kwargs['std'] = _parse_cli_float(kwargs['std'], 'std')
     if 'corr_t' in kwargs:
-        kwargs['corr_t'] = float(kwargs['corr_t'])
+        kwargs['corr_t'] = _parse_cli_float(kwargs['corr_t'], 'corr_t')
     if 'n_sweeps' in kwargs:
-        kwargs['n_sweeps'] = int(kwargs['n_sweeps'])
+        kwargs['n_sweeps'] = _parse_cli_int(kwargs['n_sweeps'], 'n_sweeps')
     if 'duration' in kwargs:
-        kwargs['duration'] = float(kwargs['duration'])
+        kwargs['duration'] = _parse_cli_float(kwargs['duration'], 'duration')
     if 'sampling_rate' in kwargs:
-        kwargs['sampling_rate'] = int(kwargs['sampling_rate'])
+        kwargs['sampling_rate'] = _parse_cli_int(kwargs['sampling_rate'], 'sampling_rate')
     if 'refractory_period' in kwargs:
-        kwargs['refractory_period'] = float(kwargs['refractory_period'])
+        kwargs['refractory_period'] = _parse_cli_float(kwargs['refractory_period'], 'refractory_period')
     if 'min_spike_height' in kwargs:
-        kwargs['min_spike_height'] = float(kwargs['min_spike_height'])
+        kwargs['min_spike_height'] = _parse_cli_float(kwargs['min_spike_height'], 'min_spike_height')
     if 'visualise' in kwargs:
         kwargs['visualise'] = kwargs['visualise'].lower() == 'true'
-        
+
     kwargs.pop('help', None)  # not needed, only for docopt
-    
+
     return kwargs
-    
-    
+
+
 def generate(only_generate: bool = True) -> Optional[dt]:
     """Generate input signals and write them to ABF files.
 
@@ -113,16 +157,16 @@ def generate(only_generate: bool = True) -> Optional[dt]:
         The generation timestamp when ``only_generate`` is False,
         otherwise None.
     """
-    print('\nGenerating input signals...\n')
+    setup_logging()
+    logger.info("Generating input signals...")
     cl_args = get_cli_args()
     myPG = PyDG(cl_args)
     _timestamp = myPG.create_input_abf()
-    
-    print(
-        '\nThe generation of input signals is now complete.\n'
-        'The ABF files are saved in the output directory and the backups in the backup directory.\n'
+
+    logger.info(
+        "Generation complete. ABF files saved to output and backup directories."
     )
-    
+
     if only_generate:
         print('Thank you for using PynamicGain!\n')
         return None
@@ -141,20 +185,24 @@ def analyse(start_time: Optional[dt] = None) -> None:
         start_time: If provided, the timestamp from which to observe
             the input directory for new recordings. Defaults to None.
     """
+    setup_logging()
     cl_args = get_cli_args()
     myPDGA = PyDGAnalysis(cl_args, start_time)
     if start_time:
         _left = myPDGA.observe()
     else:
+        if 'analyse_file' not in cl_args:
+            print("Error: --analyse_file is required when not in observation mode.", file=sys.stderr)
+            sys.exit(1)
         _left = myPDGA.analyse_rec(cl_args['analyse_file'])
-        
+
     if _left == 0:
-        print('All Sweeps analysed.')
+        logger.info("All sweeps analysed.")
     else:
-        print(f'Time limit reached. {_left} Sweeps left to analyse.')
+        logger.warning("Time limit reached. %d sweep(s) left to analyse.", _left)
 
     print('\nThank you for using PynamicGain!\n')
-    
+
 
 def generate_analyse() -> None:
     """Generate input signals and immediately analyse the recordings.

@@ -22,11 +22,14 @@ However, this can be extended to more complex analysis in the future.
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
+import logging
 import warnings
 
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.signal import find_peaks
+
+logger = logging.getLogger(__name__)
 
 
 def get_analysis_function(what: str = 'mini_sta'):
@@ -64,7 +67,7 @@ def set_analysis_parameters(what: str = 'mini_sta', **kwargs) -> dict:
         time_btw2spikes = kwargs['analysis']['fraction_min_spike_distance']
         time_btw2spikes *= kwargs['analysis']['refractory_period']
         time_btw2spikes = int(time_btw2spikes * kwargs['sampling_rate'])
-        
+
         return {
             "refractory_period": kwargs['analysis']['refractory_period'],
             "min_spike_height": kwargs['analysis']['min_spike_height'],
@@ -74,16 +77,16 @@ def set_analysis_parameters(what: str = 'mini_sta', **kwargs) -> dict:
         }
     else:
         raise ValueError(f"Unknown analysis type: {what}")
-            
+
 
 def minimal_spike_train_analysis(
-    x_time: np.ndarray, 
-    sweep_trace: np.ndarray, 
-    refractory_period: float, 
-    min_spike_height: float, 
-    min_spike_distance: int, 
-    sampling_rate: int, 
-    sweep_number: int, 
+    x_time: np.ndarray,
+    sweep_trace: np.ndarray,
+    refractory_period: float,
+    min_spike_height: float,
+    min_spike_distance: int,
+    sampling_rate: int,
+    sweep_number: int,
     visualise: bool = False,
     **kwargs
     ) -> plt.figure:
@@ -119,13 +122,28 @@ def minimal_spike_train_analysis(
         UserWarning: When fewer than 3 spikes are detected, as some
             metrics cannot be computed.
     """
+    # Guard against zero-length recordings
+    if len(x_time) == 0 or len(sweep_trace) == 0:
+        warnings.warn(
+            f"Sweep {sweep_number}: Empty recording (zero-length trace). "
+            f"Skipping analysis."
+        )
+        return None
+
     # find peaks with most basic algorithm; TODO: can be improved in the future
     peaks_ = find_peaks(sweep_trace, height=min_spike_height, distance=min_spike_distance)[0]
     peak_times = x_time[peaks_]
     n_spikes = len(peak_times)
 
-    # calculate mean firing rate
-    mfr = n_spikes / x_time[-1]
+    # calculate mean firing rate (guard against zero-duration recording)
+    recording_duration = x_time[-1]
+    if recording_duration > 0:
+        mfr = n_spikes / recording_duration
+    else:
+        mfr = 0.0
+        warnings.warn(
+            f"Sweep {sweep_number}: Recording duration is zero. MFR set to 0."
+        )
 
     if n_spikes < 2:
         isi = np.array([])
@@ -137,33 +155,35 @@ def minimal_spike_train_analysis(
             warnings.warn(f"Sweep {sweep_number}: Only 1 spike detected. CV and LvR cannot be computed.")
     elif n_spikes == 2:
         isi = np.diff(peak_times)
-        cv = np.std(isi) / np.mean(isi)
+        mean_isi = np.mean(isi)
+        cv = np.std(isi) / mean_isi if mean_isi > 0 else np.nan
         lvR = np.nan
         warnings.warn(f"Sweep {sweep_number}: Only 2 spikes detected. LvR cannot be computed.")
     else:
         isi = np.diff(peak_times)
-        cv = np.std(isi) / np.mean(isi)
+        mean_isi = np.mean(isi)
+        cv = np.std(isi) / mean_isi if mean_isi > 0 else np.nan
         # LvR calculation
         s_ = 3 / (len(isi) - 1)
         si_ = isi[:-1] + isi[1:]
         ft_ = 1 - ((4 * (isi[:-1] * isi[1:])) / si_**2)
         st_ = 1 + ((4 * refractory_period) / si_)
         lvR = s_ * np.sum(ft_ * st_)
-    
-    if visualise == True:
+
+    if visualise:
         _bp = int(kwargs['interval_before_peak'] * sampling_rate)  # data points before peak
-        _ap = int(kwargs['interval_after_peak'] * sampling_rate)  # data points after peak 
+        _ap = int(kwargs['interval_after_peak'] * sampling_rate)  # data points after peak
         _snippet_length = _bp + _ap + 1  # +1 for the peak itself
-        
+
         fig, axs = plt.subplots(3, 1, figsize = (15, 10), tight_layout = True)
-        
+
         axs[0].axhline(0, color = 'grey', linestyle = '--', lw = 0.5, alpha = 0.8)
         axs[0].plot(x_time, sweep_trace)
         axs[0].scatter(peak_times, sweep_trace[peaks_], color = 'red', marker = 'x')
         axs[0].set_title('Sweep Trace with Detected Peaks')
         axs[0].set_xlabel('Time (s)')
         axs[0].set_ylabel('Voltage (mV)')
-        
+
         _x_end = kwargs['trace_start'] + kwargs['trace_duration']
         axs[0].set_xlim(
             kwargs['trace_start']-0.1,
@@ -199,17 +219,15 @@ def minimal_spike_train_analysis(
         axs[2].set_xlabel('Time (ms)')
         axs[2].set_ylabel('Voltage (mV)')
         axs[2].set_ylim(*kwargs['snippet_ylim'])
-        
+
         fig.suptitle(f'Sweep {sweep_number}')
-        
+
     else:
         fig = None
-        
-    print(
-            f'Sweep {sweep_number} has the following properties:\n'
-            f'\tMFR: {mfr:.2f} Hz\n'
-            f'\tCV: {cv:.2f}\n'
-            f'\tLVR: {lvR:.2f}\n'
-        )
-        
+
+    logger.info(
+        "Sweep %d: MFR=%.2f Hz, CV=%.2f, LvR=%.2f",
+        sweep_number, mfr, cv, lvR,
+    )
+
     return fig

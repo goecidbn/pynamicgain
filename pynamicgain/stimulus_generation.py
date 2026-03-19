@@ -45,13 +45,13 @@ def generate_input(type: str = 'OU', **kwargs) -> NDArray[np.float64]:
         ValueError: If ``type`` is not a recognised input type.
     """
     input_kwargs = create_input_dict(type, **kwargs)
-    
+
     if type == 'OU':
         return exact_ou_process(**input_kwargs)
     else:
         raise ValueError(f"Unknown input type: {type}")
-    
-    
+
+
 
 def create_input_dict(type: str = 'OU', **kwargs) -> dict:
     """Extract and normalise parameters for input generation.
@@ -126,8 +126,8 @@ def inner_exact(eta, mu, _kappa):
 
 
 def exact_ou_process(
-    duration: int, 
-    dt: float, 
+    duration: int,
+    dt: float,
     mu: float,
     fluctuation_size: float,
     input_correlation: float,
@@ -150,6 +150,11 @@ def exact_ou_process(
         Simulation trace of the Ornstein-Uhlenbeck process with shape
         ``(trace_length,)`` and dtype ``np.double``.
 
+    Raises:
+        ValueError: If any of the numerical parameters are invalid
+            (non-positive duration, time step, or correlation time;
+            negative fluctuation size).
+
     Note:
         The first value is scaled to the stationary standard deviation.
         Each subsequent step applies the decay parameter *kappa* and
@@ -169,11 +174,20 @@ def exact_ou_process(
         Ornstein-Uhlenbeck process and its integral. *Physical Review E*,
         54(2), 2084.
     """
+    if duration <= 0:
+        raise ValueError(f"duration must be positive, got {duration}.")
+    if dt <= 0:
+        raise ValueError(f"dt must be positive, got {dt}.")
+    if input_correlation <= 0:
+        raise ValueError(f"input_correlation must be positive, got {input_correlation}.")
+    if fluctuation_size < 0:
+        raise ValueError(f"fluctuation_size must be non-negative, got {fluctuation_size}.")
+
     RNG_ = np.random.default_rng(seed=key)
-    
+
     _kappa_sq = np.exp(-2.0 * dt / input_correlation)
     _sk = fluctuation_size * np.sqrt(1 - _kappa_sq)
-    
+
     eta = RNG_.normal(loc=0, scale=_sk, size=int(np.ceil(duration/dt)))
     eta[0] /= np.sqrt(1 - _kappa_sq)
 
