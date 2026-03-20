@@ -35,11 +35,16 @@ from typing import TYPE_CHECKING, Union
 if TYPE_CHECKING:
     from pynamicgain._types import SetupConfig
 
+import logging
+
 import numpy as np
+from numpy.random import Generator, PCG64DXSM, SeedSequence
 from numpy.typing import NDArray
 from numba import njit
 
 from pynamicgain._types import StimulusParams
+
+logger = logging.getLogger(__name__)
 
 
 def generate_input(type: str = 'OU', **kwargs) -> NDArray[np.float64]:
@@ -204,6 +209,18 @@ def exact_ou_process(
 
     Numba-accelerated implementation based on Gillespie 1996 (Phys Rev E).
 
+    The RNG is constructed explicitly as
+    ``Generator(PCG64DXSM(SeedSequence(key)))`` to ensure:
+
+    * High-entropy initialisation via ``SeedSequence`` scrambling,
+      even for low-entropy integer seeds.
+    * Use of ``PCG64DXSM`` (better statistical properties in parallel
+      contexts compared to the default ``PCG64``).
+
+    .. versionchanged:: 0.1.2
+       Replaced ``default_rng(seed=key)`` (PCG64) with an explicit
+       ``Generator(PCG64DXSM(SeedSequence(key)))`` construction.
+
     Args:
         duration: Duration of the simulation in seconds.
         dt: Duration of one time step of the simulation in seconds.
@@ -251,7 +268,10 @@ def exact_ou_process(
     if fluctuation_size < 0:
         raise ValueError(f"fluctuation_size must be non-negative, got {fluctuation_size}.")
 
-    RNG_ = np.random.default_rng(seed=key)
+    RNG_ = Generator(PCG64DXSM(SeedSequence(key)))
+    logger.debug(
+        "OU process RNG: Generator(PCG64DXSM(SeedSequence(%d))).", key,
+    )
 
     _kappa_sq = np.exp(-2.0 * dt / input_correlation)
     _sk = fluctuation_size * np.sqrt(1 - _kappa_sq)

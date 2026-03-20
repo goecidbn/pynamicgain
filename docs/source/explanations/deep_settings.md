@@ -24,7 +24,7 @@ A setup configuration file has four main sections:
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | `version` | string | current release | Package version that created the file. **Do not change.** |
-| `master_seed` | int | fixed | Global seed for the PCG64DXSM generator. **Do not change.** |
+| `master_seed` | int | fixed | Global seed fed into `SeedSequence` to derive per-setup `PCG64DXSM` streams. **Do not change.** |
 | `n_seeds_per_setup` | int | 1 000 000 | Number of unique seeds allocated per setup. **Do not change.** |
 | `current_seed_index` | int | 0 | Tracks how many seeds have been consumed. Updated automatically. **Informational only** — the seed CSV file is the authoritative source of truth. |
 | `setup_id` | int | — | Positive integer (1–20) identifying this setup. Must be unique across all distributed setups. |
@@ -121,6 +121,63 @@ print(config.settings)        # dict with [settings] section
 The `SetupConfig` dataclass is immutable (frozen) and carries all resolved
 paths and merged CLI overrides. See the API reference for
 `pynamicgain._types.SetupConfig` for the full list of fields.
+
+---
+
+## RNG Architecture (v0.1.2+)
+
+PynamicGain uses NumPy's modern PRNG infrastructure to guarantee statistically
+independent random streams across all distributed setups. This section documents
+the design decisions and the best practices they implement.
+
+### Design Overview
+
+```
+master_seed (128-bit integer, shared across all labs)
+    │
+    └─► SeedSequence(master_seed)
+            │
+            ├─► .spawn(1)[0]  → PCG64DXSM  → Setup 1 stream
+            ├─► .spawn(2)[1]  → PCG64DXSM  → Setup 2 stream
+            ├─► .spawn(3)[2]  → PCG64DXSM  → Setup 3 stream
+            └─► ...
+```
+
+Each setup receives its own **child `SeedSequence`** via `spawn()`, which is
+then used to initialise a `PCG64DXSM` BitGenerator.  Within each setup, seeds
+are drawn sequentially from this stream and recorded in the seed CSV.
+
+When an OU process is generated, the per-sweep seed from the CSV seeds a
+**second, independent** RNG constructed as
+`Generator(PCG64DXSM(SeedSequence(seed)))`.
+
+### Best Practices Implemented
+
+| # | Best Practice | Implementation |
+|---|--------------|----------------|
+| 1 | Use `PCG64DXSM` explicitly for parallel use | Both `SeedManager` and `exact_ou_process()` use `PCG64DXSM` instead of the default `PCG64`. |
+| 2 | Use `SeedSequence` for high-entropy initialisation | The master seed passes through `SeedSequence` before reaching the BitGenerator. Per-sweep seeds also use `SeedSequence`. |
+| 3 | Always store the used seed | Every seed is recorded in the seed CSV before the corresponding ABF file is used. |
+| 4 | Use `spawn()` for independent parallel streams | Each setup gets its own child `SeedSequence` via `spawn()`, providing statistical independence with very high probability. |
+| 5 | Log the BitGenerator for future reference | `SeedManager.BIT_GENERATOR` records the class name; initialisation parameters are logged at `INFO` level. |
+| 6 | Avoid `RandomState` | PynamicGain exclusively uses the `Generator` API. |
+
+### Why `PCG64DXSM` over `PCG64`?
+
+`PCG64DXSM` (double-xorshift-multiply variant) provides stronger statistical
+properties when many parallel streams are used, avoiding known self-correlation
+weaknesses of `PCG64` (see
+[numpy/numpy#16313](https://github.com/numpy/numpy/issues/16313)).  It is the
+announced eventual successor to `PCG64` as NumPy's default BitGenerator.
+
+### Reproducibility Note
+
+Seeds generated before v0.1.2 used a different RNG positioning strategy
+(`PCG64DXSM(master_seed).advance(offset)`) and a different BitGenerator in
+`exact_ou_process()` (`default_rng()` → `PCG64`).  **All previously generated
+seeds are stored in the seed CSV** and the corresponding ABF files are
+unchanged.  Only *new* seeds drawn after the v0.1.2 update follow the
+`SeedSequence.spawn()` streams.
 
 ---
 

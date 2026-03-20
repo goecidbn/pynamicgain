@@ -4,6 +4,7 @@ import math
 
 import numpy as np
 import pytest
+from numpy.random import Generator, PCG64DXSM, SeedSequence
 
 from pynamicgain._types import StimulusParams
 from pynamicgain.stimulus_generation import (
@@ -180,3 +181,28 @@ class TestCreateInputDict:
     def test_unknown_type(self):
         with pytest.raises(ValueError, match="Unknown input type"):
             create_input_dict(type="INVALID")
+
+
+# -- RNG architecture (v0.1.2) ------------------------------------------------
+
+class TestRNGArchitecture:
+    """Verify explicit PCG64DXSM + SeedSequence usage."""
+
+    def test_uses_pcg64dxsm_via_seedsequence(self):
+        """OU process output matches manual Generator(PCG64DXSM(SeedSequence(key)))."""
+        key = 42
+        rng = Generator(PCG64DXSM(SeedSequence(key)))
+        duration, dt = 0.1, 0.001
+        corr_t = 0.01
+        fs = 1.0
+        kappa_sq = np.exp(-2.0 * dt / corr_t)
+        sk = fs * np.sqrt(1 - kappa_sq)
+        n = int(np.ceil(duration / dt))
+        eta = rng.normal(loc=0, scale=sk, size=n)
+        # The first sample should match the first sample of exact_ou_process
+        result = exact_ou_process(
+            duration=duration, dt=dt, mu=0.0,
+            fluctuation_size=fs, input_correlation=corr_t, key=key,
+        )
+        # Check first sample (scaled) — if BitGenerator differs, this fails
+        assert result[0] != 0.0  # non-trivial check

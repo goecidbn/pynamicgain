@@ -1,6 +1,19 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.1.2] - 2026-03-20
+
+### Changed
+- **RNG architecture — `SeedSequence` + `spawn()` for per-setup streams**: `SeedManager` now creates each setup's `PCG64DXSM` BitGenerator via `SeedSequence(master_seed).spawn(setup_id)[setup_id - 1]` instead of the previous `PCG64DXSM(master_seed).advance(offset)` pattern. This follows NumPy best practices for parallel / distributed RNG usage and guarantees statistically independent streams across setups with very high probability (see [numpy/numpy#16313](https://github.com/numpy/numpy/issues/16313)).
+- **Explicit `PCG64DXSM` in stimulus generation**: `exact_ou_process()` now constructs the RNG as `Generator(PCG64DXSM(SeedSequence(key)))` instead of `default_rng(seed=key)`. This replaces the implicit `PCG64` BitGenerator with the explicitly specified `PCG64DXSM`, which has stronger statistical properties in parallel contexts and benefits from `SeedSequence` entropy scrambling even for low-entropy integer seeds.
+- **BitGenerator audit logging**: Both `SeedManager` and `exact_ou_process()` now log the BitGenerator class and initialisation parameters for reproducibility auditing. `SeedManager` exposes a `BIT_GENERATOR` class attribute (`"PCG64DXSM"`).
+
+### Added
+- New RNG architecture tests in `test_seed.py` (`TestRNGArchitecture`) and `test_stimulus_generation.py` (`TestRNGArchitecture`) verifying `PCG64DXSM` usage and `SeedSequence.spawn()` determinism. Test count increased from 101 to 106.
+
+### Migration
+- **Breaking change for new seed sequences**: Seeds generated after this update will differ from those the previous code would have produced for the same index. **Existing CSV records remain valid** — all previously used seeds are stored in the seed CSV (the single source of truth) and are unaffected. The ABF stimulus files already on disk are unchanged. Only *future* seeds drawn by `SeedManager.draw()` will follow the new `SeedSequence.spawn()` streams.
+
 ## [0.1.1] - 2026-03-20
 
 ### Added

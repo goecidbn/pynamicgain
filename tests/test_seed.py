@@ -6,6 +6,7 @@ import os
 import pandas as pd
 import pytest
 import tomli
+from numpy.random import PCG64DXSM, SeedSequence
 
 from pynamicgain.seed import SeedManager
 
@@ -234,3 +235,38 @@ class TestPersistSetupFile:
 
         assert data["current_seed_index"] == 1
         assert data["setup_id"] == 1
+
+
+class TestRNGArchitecture:
+    """Verify the SeedSequence + PCG64DXSM architecture (v0.1.2)."""
+
+    def test_bit_generator_class_attr(self):
+        """SeedManager exposes the BitGenerator name."""
+        assert SeedManager.BIT_GENERATOR == "PCG64DXSM"
+
+    def test_uses_pcg64dxsm(self, sample_setup_config):
+        """Internal BitGenerator is PCG64DXSM."""
+        mgr = SeedManager(sample_setup_config)
+        assert isinstance(mgr._bg, PCG64DXSM)
+
+    def test_spawn_produces_independent_streams(self, sample_setup_config):
+        """SeedSequence.spawn() child for setup_id=1 matches manual spawn."""
+        mgr = SeedManager(sample_setup_config)
+        # Manually construct the same child
+        ss = SeedSequence(sample_setup_config.master_seed)
+        child_ss = ss.spawn(1)[0]
+        bg = PCG64DXSM(child_ss)
+        # Both should produce the same first raw value
+        expected = bg.random_raw()
+        _, seed = mgr.draw()
+        assert seed == int(expected)
+
+    def test_create_bit_generator_static(self, sample_setup_config):
+        """_create_bit_generator is deterministic."""
+        bg1 = SeedManager._create_bit_generator(
+            sample_setup_config.master_seed, 1, 0,
+        )
+        bg2 = SeedManager._create_bit_generator(
+            sample_setup_config.master_seed, 1, 0,
+        )
+        assert bg1.random_raw() == bg2.random_raw()

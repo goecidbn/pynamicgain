@@ -31,7 +31,7 @@ import tempfile
 
 import pandas as pd
 import tomli_w
-from numpy.random import PCG64DXSM
+from numpy.random import PCG64DXSM, SeedSequence
 
 from pynamicgain._types import SetupConfig
 from pynamicgain.config import config_header
@@ -46,6 +46,17 @@ class SeedManager:
     :meth:`commit`. The seed CSV is the single source of truth; the
     TOML ``current_seed_index`` is updated for informational purposes
     only.
+
+    Each setup receives its own independent ``PCG64DXSM`` BitGenerator
+    backed by a child ``SeedSequence`` derived from the master seed via
+    ``SeedSequence.spawn()``.  This follows NumPy best practices for
+    parallel / distributed RNG usage and avoids the self-correlation
+    weaknesses of ``PCG64`` (see `numpy/numpy#16313`_).
+
+    .. versionchanged:: 0.1.2
+       Replaced ``PCG64DXSM(master_seed).advance(offset)`` with
+       ``SeedSequence(master_seed).spawn()`` for per-setup stream
+       independence.
 
     Args:
         config: The frozen setup configuration.
@@ -63,19 +74,63 @@ class SeedManager:
         mgr.commit(records)
     """
 
+    #: Name of the BitGenerator used for audit / reproducibility logging.
+    BIT_GENERATOR = "PCG64DXSM"
+
     def __init__(self, config: SetupConfig) -> None:
         self._config = config
         self._seed_csv = config.seed_csv
         self._setup_file = config.setup_file
         self._current_index = config.current_seed_index
 
-        self._bg = PCG64DXSM(config.master_seed)
-        self._bg.advance(
-            config.current_seed_index
-            + config.setup_id * config.n_seeds_per_setup
+        self._bg = self._create_bit_generator(
+            config.master_seed,
+            config.setup_id,
+            config.current_seed_index,
+        )
+
+        logger.info(
+            "SeedManager initialised: setup_id=%d, BitGenerator=%s, "
+            "SeedSequence(master_seed).spawn(%d)[%d], current_index=%d.",
+            config.setup_id,
+            self.BIT_GENERATOR,
+            config.setup_id,
+            config.setup_id - 1,
+            config.current_seed_index,
         )
 
         self.reconcile()
+
+    # ------------------------------------------------------------------
+    # BitGenerator construction
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _create_bit_generator(
+        master_seed: int,
+        setup_id: int,
+        current_index: int,
+    ) -> PCG64DXSM:
+        """Create a per-setup ``PCG64DXSM`` via ``SeedSequence.spawn()``.
+
+        Each *setup_id* receives its own child ``SeedSequence``, ensuring
+        statistically independent streams across distributed setups.
+
+        Args:
+            master_seed: The global master seed.
+            setup_id: 1-based setup identifier.
+            current_index: Number of seeds already consumed — the
+                BitGenerator is advanced by this many steps.
+
+        Returns:
+            A positioned ``PCG64DXSM`` instance.
+        """
+        ss = SeedSequence(master_seed)
+        child_ss = ss.spawn(setup_id)[setup_id - 1]
+        bg = PCG64DXSM(child_ss)
+        if current_index > 0:
+            bg.advance(current_index)
+        return bg
 
     # ------------------------------------------------------------------
     # Public API
@@ -187,10 +242,10 @@ class SeedManager:
                 )
                 self._current_index = csv_index
                 # Re-position the RNG to match
-                self._bg = PCG64DXSM(self._config.master_seed)
-                self._bg.advance(
-                    csv_index
-                    + self._config.setup_id * self._config.n_seeds_per_setup
+                self._bg = self._create_bit_generator(
+                    self._config.master_seed,
+                    self._config.setup_id,
+                    csv_index,
                 )
                 self._persist_setup_file()
 
