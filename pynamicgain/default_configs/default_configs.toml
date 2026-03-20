@@ -2,13 +2,13 @@
 # ==============================================
 
 # This file contains the default configuration for the OU PClamp Wave Generation
-# Author: Friedrich Schwarz <friedrichschwarz@unigoettingen.de>
+# Author: Friedrich Schwarz <friedrich.schwarz@uni.goettingen.de>
 
 # ========================================================================= #
 # ! EVERY SETUP MUST HAVE AN OWN CONFIG FILE SPECIFYING THE SETUP NUMBER !  #
 # ========================================================================= #
 
-version = "0.0.12"  # NEVER CHANGE THIS VALUE
+version = "0.1.0"  # NEVER CHANGE THIS VALUE
 
 master_seed = 121912940104681416  # NEVER CHANGE THIS VALUE
 n_seeds_per_setup = 1_000_000  # NEVER CHANGE THIS VALUE

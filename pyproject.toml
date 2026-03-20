@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "PynamicGain"
-version = "0.0.12"
+version = "0.1.0"
 requires-python = ">=3.11"
 dependencies = [
   "pandas",
@@ -21,12 +21,12 @@ dependencies = [
 ]
 
 authors = [
-  { name = "Friedrich Schwarz", email = "friedrichschwarz@unigoettingen.de" },
+  { name = "Friedrich Schwarz", email = "friedrich.schwarz@uni.goettingen.de" },
   { name = "Andreas Neef"},
   { name = "Stefan Pommer"},
 ]
 maintainers = [
-  { name="Friedrich Schwarz", email="friedrichschwarz@unigoettingen.de" },
+  { name="Friedrich Schwarz", email="friedrich.schwarz@uni.goettingen.de" },
 ]
 
 readme = "README.md"
@@ -70,10 +70,16 @@ docs = [
   "pylint",
   "sphinx",
   "sphinx-autodoc-typehints",
+  "sphinx-design",
 ]
 interactive = [
   "jupyterlab",
   "ipykernel",
+]
+test = [
+  "pytest >= 8.0",
+  "pytest-cov",
+  "pytest-mock",
 ]
 
 
@@ -83,6 +89,18 @@ packages = [
   "pynamicgain.default_configs",
 ]
 include-package-data = true
+
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+  "slow: marks tests involving Numba JIT compilation (deselect with '-m \"not slow\"')",
+]
+addopts = "--strict-markers"
+filterwarnings = [
+  "error",
+  "ignore::DeprecationWarning:pynamicgain.base",
+]
 
 
 [tool.setuptools.package-data]

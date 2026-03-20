@@ -30,7 +30,7 @@ Arguments:
 
 
 # PynamicGain: Creating Dynamic Gain inputs for Python-based patch clamp setups.
-# Copyright (C) 2024  Friedrich Schwarz <friedrichschwarz@unigoettingen.de>
+# Copyright (C) 2024–2026  Friedrich Schwarz <friedrich.schwarz@uni.goettingen.de>
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published
@@ -54,7 +54,7 @@ from typing import Optional
 
 import docopt
 
-from pynamicgain import PyDG, PyDGAnalysis, setup_logging
+from pynamicgain import PyDG, PyDGAnalysis, setup_logging, load_config
 
 logger = logging.getLogger(__name__)
 
@@ -160,7 +160,8 @@ def generate(only_generate: bool = True) -> Optional[dt]:
     setup_logging()
     logger.info("Generating input signals...")
     cl_args = get_cli_args()
-    myPG = PyDG(cl_args)
+    config = load_config(cl_args)
+    myPG = PyDG(config)
     _timestamp = myPG.create_input_abf()
 
     logger.info(
@@ -187,7 +188,8 @@ def analyse(start_time: Optional[dt] = None) -> None:
     """
     setup_logging()
     cl_args = get_cli_args()
-    myPDGA = PyDGAnalysis(cl_args, start_time)
+    config = load_config(cl_args)
+    myPDGA = PyDGAnalysis(config, start_time)
     if start_time:
         _left = myPDGA.observe()
     else:
@@ -226,7 +228,7 @@ def help() -> None:
         '  pydg_analyse            Analyse a specific recording.\n'
         '  pydg_help               Show this help message.\n'
         '\n'
-        'Please report bugs to <friedrichschwarz@unigoettingen.de>.\n'
+        'Please report bugs to <friedrich.schwarz@uni.goettingen.de>.\n'
         'PynamicGain homepage: <https://github.com/goecidbn/pynamicgain>.\n\n'
     )
 

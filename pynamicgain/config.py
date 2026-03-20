@@ -9,7 +9,7 @@ Matplotlib, etc.
 
 
 # PynamicGain: Creating Dynamic Gain inputs for Python-based patch clamp setups.
-# Copyright (C) 2024  Friedrich Schwarz <friedrichschwarz@unigoettingen.de>
+# Copyright (C) 2024–2026  Friedrich Schwarz <friedrich.schwarz@uni.goettingen.de>
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published
@@ -25,10 +25,16 @@ Matplotlib, etc.
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
+from __future__ import annotations
+
 import logging
 import os
+from typing import TYPE_CHECKING
 
 import tomli
+
+if TYPE_CHECKING:
+    from pynamicgain._types import SetupConfig
 
 logger = logging.getLogger(__name__)
 
@@ -97,7 +103,7 @@ def config_header(read_configs: dict) -> str:
         f'# This file was created by {read_configs["config_file_creator"]}.\n'
         f'# Creation date: {read_configs["creation_time"]}\n\n'
 
-        '# Author: Friedrich Schwarz <friedrichschwarz@unigoettingen.de>\n'
+        '# Author: Friedrich Schwarz <friedrich.schwarz@uni.goettingen.de>\n'
         '# Please contact the author if you have any problems (or suggestions).\n\n'
     )
     return header
@@ -190,6 +196,96 @@ def read_setup_configs(setup_dir: str) -> tuple[str, dict]:
     logger.info("Loaded setup configuration from '%s'.", setup_file)
 
     return setup_file, setup_configs
+
+
+def load_config(cli_args: dict) -> "SetupConfig":
+    """Load a setup TOML, merge CLI overrides, and return a frozen config.
+
+    This is the preferred entry point for building a
+    :class:`~pynamicgain._types.SetupConfig`. It replaces the dynamic
+    attribute-setting logic that previously lived in ``PyDGBase.__init__``.
+
+    Args:
+        cli_args: Dictionary of command line arguments. Must contain at
+            least ``'setup_dir'``. Other keys (e.g. ``'n_sweeps'``,
+            ``'out_dir'``) override values from the TOML file.
+
+    Returns:
+        A frozen :class:`~pynamicgain._types.SetupConfig` instance.
+
+    Raises:
+        FileNotFoundError: If the setup directory or file is missing.
+        ValueError: If the configuration is invalid.
+    """
+    from pynamicgain._types import SetupConfig  # deferred to avoid circular import
+
+    setup_file, raw = read_setup_configs(cli_args['setup_dir'])
+
+    # CLI args override TOML values (CLI wins)
+    merged = dict(raw)
+    for k, v in cli_args.items():
+        if v is not None and k not in ('setup_dir',):
+            merged[k] = v
+
+    setup_dir = os.path.abspath(cli_args['setup_dir'])
+
+    # Resolve default directories
+    out_dir = merged.get('out_dir', '') or ''
+    input_dir = merged.get('input_dir', '') or ''
+    backup_dir = merged.get('backup_dir', '')
+    analysis_dir = merged.get('analysis_dir', '')
+
+    if not backup_dir:
+        backup_dir = os.path.join(out_dir, 'backup') if out_dir else ''
+    if not analysis_dir:
+        analysis_dir = os.path.join(input_dir, 'analysis') if input_dir else ''
+
+    # Create directories and check permissions
+    for path, name in [
+        (out_dir, 'output'),
+        (input_dir, 'input'),
+        (backup_dir, 'backup'),
+        (analysis_dir, 'analysis'),
+        (setup_dir, 'setup'),
+    ]:
+        if path:
+            check_directory(path, name)
+
+    # Build seed CSV path
+    seed_csv = os.path.join(
+        setup_dir,
+        f'seed_list_setup_{merged["setup_id"]}.csv',
+    )
+
+    config = SetupConfig(
+        version=merged['version'],
+        master_seed=merged['master_seed'],
+        n_seeds_per_setup=merged['n_seeds_per_setup'],
+        current_seed_index=merged['current_seed_index'],
+        setup_id=merged['setup_id'],
+        setup_info=merged['setup_info'],
+        config_file_creator=merged['config_file_creator'],
+        creation_time=merged['creation_time'],
+        stimulus_type=merged['stimulus_type'],
+        n_sweeps=int(merged.get('n_sweeps', -1)),
+        sampling_rate=int(merged.get('sampling_rate', -1)),
+        duration=float(merged.get('duration', -1)),
+        out_dir=out_dir,
+        input_dir=input_dir,
+        backup_dir=backup_dir,
+        analysis_dir=analysis_dir,
+        setup_dir=setup_dir,
+        setup_file=setup_file,
+        seed_csv=seed_csv,
+        settings=merged.get('settings', {}),
+        stimulus=merged.get('stimulus', {}),
+        analysis=merged.get('analysis', {}),
+        std=float(merged.get('std', 0.0)),
+        corr_t=float(merged.get('corr_t', 0.0)),
+    )
+
+    logger.info("Loaded configuration for setup %d.", config.setup_id)
+    return config
 
 
 def check_directory(path: str, name: str) -> None:

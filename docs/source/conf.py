@@ -13,7 +13,7 @@ from importlib.metadata import version as get_version
 sys.path.insert(0, os.path.abspath('../..'))
 
 project = 'Pynamic Gain'
-copyright = '2024, Friedrich Schwarz, Stefan Pommer, Andreas Neef'
+copyright = '2024–2026, Friedrich Schwarz, Stefan Pommer, Andreas Neef'
 author = 'Friedrich Schwarz, Stefan Pommer, Andreas Neef'
 release = get_version("pynamicgain")  # Fetch the version from the installed package
 version = release
@@ -35,6 +35,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.graphviz',
     'sphinx.ext.inheritance_diagram',
+    'sphinx_design',
 ]
 
 templates_path = ['_templates']
@@ -53,21 +54,28 @@ exclude_patterns = [
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'pydata_sphinx_theme'
+html_logo = '_static/pg_logo.svg'
 html_context = {
     "version": version,
 }
 html_theme_options = {
+    "logo": {
+        "text": "Pynamic Gain",
+    },
     "icon_links": [
         {"name": "GitHub", "url": "https://github.com/goecidbn/pynamicgain", "icon": "fab fa-github"},
+        {"name": "PyPI", "url": "https://pypi.org/project/PynamicGain/", "icon": "fas fa-box"},
     ],
     "primary_sidebar_end": ["navbar-icon-links"],
-    "show_nav_level": 3,  # Adjust based on your needs
+    "show_nav_level": 3,
     "navbar_end": ["version", "navbar-icon-links"],
-    "header_links_before_dropdown": 6,
+    # Show First Steps, Usage, Motivations, API in header bar;
+    # remaining items (Advanced Settings, Development, SMPR) fold into "More ▾"
+    "header_links_before_dropdown": 4,
 }
 
 html_sidebars = {
-    "explanations/*": ["sidebar-nav-bs", "navbar-nav"],  # [] to disable
+    "explanations/*": ["sidebar-nav-bs", "navbar-nav"],
     "index.html": [],
     "_autosummary/*": ["sidebar-nav-bs"],
 }

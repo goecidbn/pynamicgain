@@ -3,39 +3,33 @@
 
 
 # distribution of python packages
-**/dist/**
-dist/**
-meax.egg-info/**
-**/meax.egg-info/**
+dist/
+*.egg-info/
 
 
 # macOS file system
 Icon
 .DS_Store
-**/.DS_Store
 
 
 # jupyter notebooks
 **/.ipynb_checkpoints
 
 
-# pycharm
-.idea
-**/.idea/**
+# pycharm / jetbrains
+.idea/
 
 
 # pycache
-**/__pycache__
-**/__pycache__/**
-.mypy_cache
-**/.mypy_cache
+__pycache__/
+.mypy_cache/
 
 
 # sphinx
-**/.doctrees
-**/.buildinfo
+docs/build/
 docs/source/_autosummary/
 docs/source/_apidoc/
+warnings_sphinx_build.txt
 
 
 # drawio
@@ -43,34 +37,17 @@ docs/source/_apidoc/
 
 
 # obsidian
-.obsidian
-**/.obsidian
-
-
-# dask-distributed
-**/dask-worker-space/**
-**/dask-worker-space/global.lock
-**/dask-worker-space/purge.lock
-**/dask-worker-space/worker**.dirlock
-**/dask-worker-space/worker/**
+.obsidian/
 
 
 # Visual Studio Code
-./Mea X
-./Mea X/**
-Mea X.idea
-
-**/.iml
 .vscode/
-.vscode/settings.json 
-.vscode/**
 
 
 # Tresorit
 **.tresorit
 **.tresorit/**
 
-.claude
 
-# do not upload build files of documentation
-docs/build/
+# Claude Code
+.claude/

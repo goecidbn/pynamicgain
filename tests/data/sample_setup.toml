@@ -1,0 +1,39 @@
+# Sample setup file for testing
+
+version = "0.1.0"
+master_seed = 121912940104681416
+n_seeds_per_setup = 1_000_000
+current_seed_index = 0
+setup_id = 1
+setup_info = "Test setup"
+config_file_creator = "pytest"
+creation_time = "2025-01-01T00:00:00"
+stimulus_type = "OU"
+n_sweeps = 3
+sampling_rate = 20000
+duration = 10.0
+
+[analysis]
+type = ["mini_sta"]
+refractory_period = 0.001
+min_spike_height = -5
+fraction_min_spike_distance = 0.8
+visualise_results = true
+
+[analysis.visualisation]
+trace_start = 0
+trace_duration = 20
+isi_bin_max = 1
+isi_bin_width = 0.25
+interval_before_peak = 0.0015
+interval_after_peak = 0.0035
+snippet_ylim = [-50, 30]
+
+[settings]
+wait_time = 30
+update_interval = 5
+observation_buffer = 180
+input_units = "pA"
+
+[stimulus.OU]
+mu = 0.0

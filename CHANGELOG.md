@@ -1,6 +1,25 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.1.0] - 2026-03-19
+
+### Changed
+- **Frozen dataclasses for parameter passing**: Introduced typed data containers (`SetupConfig`, `StimulusParams`, `AnalysisParams`, `VisualisationParams`, `SpikeMetrics`) in new `_types.py` module. Replaces the previous `**kwargs` threading pattern with well-defined, inspectable parameter contracts.
+- **Analysis computation/visualisation split**: `minimal_spike_train_analysis()` split into pure `compute_spike_metrics()` (no I/O, no matplotlib) and `plot_sweep_analysis()` (figure generation from pre-computed metrics). The legacy function is retained as a backwards-compatible wrapper.
+- **Standalone SeedManager**: Seed management extracted from `PyDG` into dedicated `seed.py` module with `SeedManager` class. Public API: `draw()` (in-memory), `commit()` (batch-persist), `reconcile()` (CSV recovery).
+- **Composition over inheritance**: `PyDG` and `PyDGAnalysis` no longer inherit from `PyDGBase`. They accept a `SetupConfig` directly or a legacy `cli_args` dict for backwards compatibility.
+- **`PyDGBase` deprecated**: Now emits `DeprecationWarning` on instantiation. Will be removed in a future release.
+- Default configuration version bumped to `0.1.0`.
+
+### Added
+- `pynamicgain._types` module with frozen dataclasses: `SetupConfig`, `StimulusParams`, `AnalysisParams`, `VisualisationParams`, `SpikeMetrics`.
+- `pynamicgain.seed` module with `SeedManager` class.
+- `load_config()` function in `config.py` — the preferred entry point for building a `SetupConfig` from TOML + CLI args.
+- `compute_spike_metrics()` — pure spike detection and statistics computation.
+- `plot_sweep_analysis()` — 3-panel figure generation from pre-computed `SpikeMetrics`.
+- `build_analysis_params()`, `build_visualisation_params()` — typed parameter builders.
+- `generate_input_from_params()`, `build_stimulus_params()`, `create_filename_from_config()` — typed stimulus generation helpers.
+
 ## [0.0.12] - 2026-03-19
 
 ### Changed

@@ -5,7 +5,7 @@ Please run this script to generate a new setup configuration file.
 
 
 # PynamicGain: Creating Dynamic Gain inputs for Python-based patch clamp setups.
-# Copyright (C) 2024  Friedrich Schwarz <friedrichschwarz@unigoettingen.de>
+# Copyright (C) 2024–2026  Friedrich Schwarz <friedrich.schwarz@uni.goettingen.de>
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published

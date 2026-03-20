@@ -10,7 +10,7 @@ imports (e.g. ``from pynamicgain import PyDG``) continue to work.
 
 
 # PynamicGain: Creating Dynamic Gain inputs for Python-based patch clamp setups.
-# Copyright (C) 2024  Friedrich Schwarz <friedrichschwarz@unigoettingen.de>
+# Copyright (C) 2024–2026  Friedrich Schwarz <friedrich.schwarz@uni.goettingen.de>
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published
@@ -33,24 +33,57 @@ try:
 except PackageNotFoundError:
     __version__ = "unknown"
 
+# Configuration and setup
 from pynamicgain.config import (
     setup_logging,
     config_header,
     read_setup_configs,
     validate_setup_configs,
     check_directory,
+    load_config,
 )
+
+# Typed data containers (new in v0.1.0)
+from pynamicgain._types import (
+    SetupConfig,
+    StimulusParams,
+    AnalysisParams,
+    VisualisationParams,
+    SpikeMetrics,
+)
+
+# Seed management (new in v0.1.0)
+from pynamicgain.seed import SeedManager
+
+# Analysis (new split API in v0.1.0)
+from pynamicgain.analysis import compute_spike_metrics, plot_sweep_analysis
+
+# Core classes (backwards-compatible)
 from pynamicgain.base import PyDGBase
 from pynamicgain.generator import PyDG
 from pynamicgain.observer import PyDGAnalysis
 
 __all__ = [
     "__version__",
+    # Config
     "setup_logging",
     "config_header",
     "read_setup_configs",
     "validate_setup_configs",
     "check_directory",
+    "load_config",
+    # Types
+    "SetupConfig",
+    "StimulusParams",
+    "AnalysisParams",
+    "VisualisationParams",
+    "SpikeMetrics",
+    # Seed management
+    "SeedManager",
+    # Analysis
+    "compute_spike_metrics",
+    "plot_sweep_analysis",
+    # Core classes
     "PyDGBase",
     "PyDG",
     "PyDGAnalysis",

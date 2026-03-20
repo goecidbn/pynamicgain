@@ -104,6 +104,26 @@ input current.
 
 ---
 
+## Programmatic Access (v0.1.0+)
+
+Since v0.1.0, you can load and inspect the full configuration as a frozen
+dataclass:
+
+```python
+from pynamicgain import load_config
+
+config = load_config({"setup_dir": "/path/to/setup"})
+print(config.sampling_rate)   # int
+print(config.analysis)        # dict with [analysis] section
+print(config.settings)        # dict with [settings] section
+```
+
+The `SetupConfig` dataclass is immutable (frozen) and carries all resolved
+paths and merged CLI overrides. See the API reference for
+`pynamicgain._types.SetupConfig` for the full list of fields.
+
+---
+
 ## Editing Tips
 
 - Always use a text editor that preserves TOML syntax (e.g. VS Code with a

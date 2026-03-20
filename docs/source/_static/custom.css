@@ -1,1 +1,34 @@
 /* Custom CSS overrides for PynamicGain documentation */
+
+/* ── Header alignment ─────────────────────────────────────────────── */
+/* Ensure navbar items are vertically centred */
+.navbar-nav {
+    align-items: center;
+}
+
+/* ── Logo grid (institutions & funding) ───────────────────────────── */
+.logo-grid {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin: 1.5rem 0;
+}
+
+.logo-grid a {
+    display: inline-flex;
+    align-items: center;
+}
+
+.logo-grid img {
+    height: 55px;
+    width: auto;
+    object-fit: contain;
+    opacity: 0.85;
+    transition: opacity 0.2s ease;
+}
+
+.logo-grid img:hover {
+    opacity: 1;
+}

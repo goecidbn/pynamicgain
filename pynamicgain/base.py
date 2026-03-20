@@ -1,13 +1,14 @@
-"""Base class for the PynamicGain package.
+"""Base class for the PynamicGain package (deprecated).
 
-Provides the shared initialisation logic for both the generator
-(:class:`~pynamicgain.generator.PyDG`) and the analysis observer
-(:class:`~pynamicgain.observer.PyDGAnalysis`).
+.. deprecated:: 0.1.0
+   ``PyDGBase`` is deprecated. Use :func:`~pynamicgain.config.load_config`
+   to build a :class:`~pynamicgain._types.SetupConfig` instead.
+   ``PyDG`` and ``PyDGAnalysis`` no longer require a base class.
 """
 
 
 # PynamicGain: Creating Dynamic Gain inputs for Python-based patch clamp setups.
-# Copyright (C) 2024  Friedrich Schwarz <friedrichschwarz@unigoettingen.de>
+# Copyright (C) 2024–2026  Friedrich Schwarz <friedrich.schwarz@uni.goettingen.de>
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published
@@ -24,13 +25,19 @@ Provides the shared initialisation logic for both the generator
 
 
 import os
-from abc import ABC
+import warnings
 
 from pynamicgain.config import read_setup_configs, check_directory
 
 
-class PyDGBase(ABC):
+class PyDGBase:
     """Base class for the PynamicGain package.
+
+    .. deprecated:: 0.1.0
+       Use :func:`~pynamicgain.config.load_config` to produce a
+       :class:`~pynamicgain._types.SetupConfig` instead. This class is
+       retained only for backwards compatibility and will be removed in
+       a future release.
 
     Reads the setup configurations and parses CLI arguments. All specified
     directories will be created if they do not exist. Instance attributes
@@ -43,18 +50,6 @@ class PyDGBase(ABC):
         _setup_file: The path to the setup file.
         _setup_configs: The configurations stored in the setup file.
         setup_dir: The directory where the setup file is stored.
-        version: The version of the PynamicGain package.
-        master_seed: The master seed for the random number generator.
-        n_seeds_per_setup: The number of seeds per setup.
-        current_seed_index: The current seed index.
-        setup_id: The setup id.
-        setup_info: The setup description.
-        config_file_creator: The creator of the setup file.
-        creation_time: The creation time of the setup file.
-        stimulus_type: The type of stimulus to generate.
-        n_sweeps: The number of sweeps to generate.
-        duration: The duration of the sweeps in seconds.
-        sampling_rate: The sampling rate of the recordings in Hz.
     """
 
     def __init__(self, cli_args: dict):
@@ -63,6 +58,13 @@ class PyDGBase(ABC):
         Args:
             cli_args: Dictionary of command line arguments.
         """
+        warnings.warn(
+            "PyDGBase is deprecated since v0.1.0. Use load_config() to build "
+            "a SetupConfig instead. PyDGBase will be removed in a future release.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
         self._setup_file, self._setup_configs = read_setup_configs(cli_args['setup_dir'])
         cli_args.update(self._setup_configs)
 

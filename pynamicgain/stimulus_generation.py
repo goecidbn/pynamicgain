@@ -3,11 +3,15 @@
 Currently the input is generated as an OU process with a given correlation time and standard deviation.
 
 In the future, this can be extended to more complex input signals.
+
+.. versionchanged:: 0.1.0
+   Functions now accept :class:`~pynamicgain._types.StimulusParams` in
+   addition to the legacy ``**kwargs`` interface.
 """
 
 
 # PynamicGain: Creating Dynamic Gain inputs for Python-based patch clamp setups.
-# Copyright (C) 2024  Friedrich Schwarz <friedrichschwarz@unigoettingen.de>
+# Copyright (C) 2024–2026  Friedrich Schwarz <friedrich.schwarz@uni.goettingen.de>
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published
@@ -23,9 +27,19 @@ In the future, this can be extended to more complex input signals.
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
+from __future__ import annotations
+
+import dataclasses
+from typing import TYPE_CHECKING, Union
+
+if TYPE_CHECKING:
+    from pynamicgain._types import SetupConfig
+
 import numpy as np
 from numpy.typing import NDArray
 from numba import njit
+
+from pynamicgain._types import StimulusParams
 
 
 def generate_input(type: str = 'OU', **kwargs) -> NDArray[np.float64]:
@@ -51,6 +65,46 @@ def generate_input(type: str = 'OU', **kwargs) -> NDArray[np.float64]:
     else:
         raise ValueError(f"Unknown input type: {type}")
 
+
+def generate_input_from_params(params: StimulusParams) -> NDArray[np.float64]:
+    """Generate an input signal from a :class:`StimulusParams` instance.
+
+    This is the preferred API for stimulus generation since v0.1.0.
+
+    Args:
+        params: Frozen stimulus parameters.
+
+    Returns:
+        The generated input signal as a 1-D array.
+
+    .. versionadded:: 0.1.0
+    """
+    return exact_ou_process(**dataclasses.asdict(params))
+
+
+def build_stimulus_params(
+    config: "SetupConfig",
+    key: int,
+) -> StimulusParams:
+    """Build a :class:`StimulusParams` from a setup config and sweep seed.
+
+    Args:
+        config: The frozen setup configuration.
+        key: The seed for this particular sweep.
+
+    Returns:
+        A frozen :class:`StimulusParams` instance.
+
+    .. versionadded:: 0.1.0
+    """
+    return StimulusParams(
+        duration=config.duration,
+        dt=1.0 / config.sampling_rate,
+        mu=config.stimulus['OU']['mu'],
+        fluctuation_size=config.std,
+        input_correlation=config.corr_t,
+        key=key,
+    )
 
 
 def create_input_dict(type: str = 'OU', **kwargs) -> dict:
@@ -103,6 +157,20 @@ def create_filename(type: str = 'OU', **kwargs) -> str:
         raise ValueError(f"Unknown input type: {type}")
 
     return _filename
+
+
+def create_filename_from_config(config: "SetupConfig") -> str:
+    """Build a standardised filename from a :class:`SetupConfig`.
+
+    Args:
+        config: The frozen setup configuration.
+
+    Returns:
+        The generated filename string.
+
+    .. versionadded:: 0.1.0
+    """
+    return f"OU_{config.corr_t}ms_{config.n_sweeps}sweeps.abf"
 
 
 @njit()
