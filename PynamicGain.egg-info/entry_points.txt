@@ -1,6 +1,0 @@
-[console_scripts]
-pydg_analyse = pynamicgain.__main__:analyse
-pydg_generate = pynamicgain.__main__:generate
-pydg_generate_analyse = pynamicgain.__main__:generate_analyse
-pydg_help = pynamicgain.__main__:help
-pydg_new_setup = pynamicgain.new_setup:initiate_new_setup
