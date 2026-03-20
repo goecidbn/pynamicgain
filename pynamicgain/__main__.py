@@ -215,6 +215,54 @@ def generate_analyse() -> None:
     analyse(_starttime)
 
 
+def backup_seed_csv() -> None:
+    """Create a backup of the seed CSV for a given setup directory.
+
+    Usage::
+
+        pydg_backup_csv [--setup_dir=<path>]
+
+    If ``--setup_dir`` is omitted the current working directory is used.
+    The backup is written next to the original CSV with a ``.bak``
+    suffix.
+
+    .. versionadded:: 0.1.0
+    """
+    setup_logging()
+
+    # Lightweight arg parsing — this command only needs --setup_dir
+    setup_dir = os.getcwd()
+    for arg in sys.argv[1:]:
+        if arg.startswith('--setup_dir='):
+            setup_dir = arg.split('=', 1)[1]
+        elif arg in ('-h', '--help'):
+            print(
+                'Usage: pydg_backup_csv [--setup_dir=<path>]\n\n'
+                'Create a backup copy of the seed CSV file (.bak).\n'
+                'Defaults to the current working directory.\n'
+            )
+            return
+
+    setup_dir = os.path.abspath(setup_dir)
+
+    try:
+        config = load_config({'setup_dir': setup_dir})
+    except (FileNotFoundError, ValueError) as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    from pynamicgain.seed import SeedManager
+    mgr = SeedManager(config)
+
+    try:
+        bak_path = mgr.backup_csv()
+    except OSError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    print(f"Backup created: {bak_path}")
+
+
 def help() -> None:
     """Print available PynamicGain CLI commands and contact information."""
     print(
@@ -226,6 +274,7 @@ def help() -> None:
         '  pydg_generate           Generate input signals.\n'
         '  pydg_generate_analyse   Generate input and analyse new recordings.\n'
         '  pydg_analyse            Analyse a specific recording.\n'
+        '  pydg_backup_csv         Back up the seed CSV file.\n'
         '  pydg_help               Show this help message.\n'
         '\n'
         'Please report bugs to <friedrich.schwarz@uni.goettingen.de>.\n'

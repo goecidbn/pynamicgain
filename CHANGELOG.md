@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.1.1] - 2026-03-20
+
+### Added
+- **Seed CSV backup**: `SeedManager.backup_csv()` creates a `.bak` copy of the seed CSV file. The backup is automatically created before every `commit()` call. If the automatic backup fails, a warning is logged and the commit proceeds — data acquisition is never blocked.
+- **`pydg_backup_csv` CLI command**: New command-line entry point for manually backing up the seed CSV. Usage: `pydg_backup_csv [--setup_dir=<path>]`. Defaults to the current working directory.
+- **Test suite**: Added comprehensive pytest-based test suite with 101 tests covering all core modules (`_types`, `config`, `seed`, `stimulus_generation`, `analysis`, `generator`, `observer`, CLI utilities). Tests run in < 1 second. New `[project.optional-dependencies] test` group with `pytest`, `pytest-cov`, and `pytest-mock`.
+- **CI workflow**: New `.github/workflows/tests.yml` runs the test suite on Python 3.11 and 3.12 for every push and pull request.
+
 ## [0.1.0] - 2026-03-19
 
 ### Changed

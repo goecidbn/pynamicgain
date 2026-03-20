@@ -5,11 +5,12 @@ If you are using the package for the first time, you should create a new setup. 
 
 ## Do experiments
 
-There are currently three main commands available for running experiments:
+There are currently four main commands available for running experiments:
 
 1. `pydg_generate`: Generates input files only.
 2. `pydg_analyse`: Analyse a given recording only.
 3. `pydg_generate_and_analyse`: Generates an input file and tracks a given directory to analyse new recordings.
+4. `pydg_backup_csv`: Back up the seed CSV file.
 
 All these commands can be used with the `--help' flag to get more information about the command and its options.
 
@@ -112,6 +113,20 @@ pydg_generate_and_analyse 2 0.025 --setup_dir=/path/to/setup
 ```
 
 The standard values for the input file are taken from the setup file located in the directory `/path/to/setup`.
+
+### Back up the seed CSV
+
+The seed CSV is the single source of truth for all generated seeds. A backup
+is automatically created before each generation run, but you can also trigger
+one manually:
+
+```bash
+pydg_backup_csv --setup_dir=/path/to/setup
+```
+
+If `--setup_dir` is omitted, the current working directory is used. The backup
+is written next to the original file with a `.bak` suffix (e.g.
+`seed_list_setup_1.csv.bak`).
 
 ---
 

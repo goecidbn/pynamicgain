@@ -147,7 +147,29 @@ class TestReconcile:
 
 
 class TestBackupCsv:
-    def test_creates_backup(self, sample_setup_config):
+    def test_backup_csv_returns_path(self, sample_setup_config):
+        """backup_csv() returns the backup path and creates the file."""
+        mgr = SeedManager(sample_setup_config)
+        bak_path = mgr.backup_csv()
+        assert bak_path == sample_setup_config.seed_csv + ".bak"
+        assert os.path.isfile(bak_path)
+
+    def test_backup_csv_is_faithful_copy(self, sample_setup_config):
+        """The .bak file is an exact copy of the original CSV."""
+        mgr = SeedManager(sample_setup_config)
+        # Add some data first
+        idx, seed = mgr.draw()
+        mgr.commit([{
+            "seed index": idx, "seed": seed,
+            "sweep": 0, "file": "f.abf", "backup": "b.abf",
+        }])
+
+        # Now take an explicit backup
+        bak_path = mgr.backup_csv()
+        with open(sample_setup_config.seed_csv) as orig, open(bak_path) as bak:
+            assert orig.read() == bak.read()
+
+    def test_commit_creates_backup(self, sample_setup_config):
         """commit() creates a .bak copy of the seed CSV."""
         mgr = SeedManager(sample_setup_config)
         idx, seed = mgr.draw()

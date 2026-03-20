@@ -7,13 +7,14 @@
 
 Before creating a new distribution, the following checklist should be completed:
 
-- [ ] Double check the version number in the `__init__.py` file in the `pynamicgain` folder.
+- [ ] Double check the version number in `pyproject.toml`.
+- [ ] Run the test suite: `pytest -v` (all tests must pass).
 - [ ] Remove the `dist` folder, the EGG-INFO folder, and the `build` folder.
 - [ ] Remove the conda environment and create a new one (`conda remove -n pydg_analysis --all`)
 - [ ] Install new conda environment (`conda create -n pydg_analysis python=3.11`)
 
 
-1. Update the version number in the `__init__.py` file in the `pynamicgain` folder.
+1. Update the version number in `pyproject.toml` and `default_configs.toml`.
 2. Create a new distribution with the following command:
 
 ```bash
@@ -39,14 +40,16 @@ python -m build
 
 After creating a new distribution, the following checklist should be completed:
 
-- [ ] Double check the version number in the `__init__.py` file in the `pynamicgain` folder.
+- [ ] Double check the version number in `pyproject.toml`.
+- [ ] Run the test suite: `pytest -v`
 - [ ] Check if the package is importable with the following command:
   - [ ] `python -c "import pynamicgain"`
   - [ ] python -> `import pynamicgain as pydg` -> `pydg.__version__`
-- [ ] Check if the package is locally installable: `pip install dist/PynamicGain-0.0.9-py3-none-any.whl`
+- [ ] Check if the package is locally installable: `pip install dist/PynamicGain-<version>-py3-none-any.whl`
 - [ ] Run all major commands
   - [ ] `pydg_help`
   - [ ] `pydg_new_setup`
+  - [ ] `pydg_backup_csv`
 
 
 
@@ -87,6 +90,32 @@ sphinx-build -b html docs/source docs/_build/html
 This will currently generate 5 warnings, which are not critical.
 
 
+## Testing
+
+PynamicGain ships with a pytest-based test suite.  Install the test
+dependencies and run:
+
+```bash
+pip install -e ".[test]"
+pytest -v
+```
+
+To skip the Numba JIT compilation tests (faster iteration):
+
+```bash
+pytest -v -m "not slow"
+```
+
+To see a coverage report:
+
+```bash
+pytest --cov=pynamicgain --cov-report=term-missing
+```
+
+Tests are also executed automatically on every push and pull request via
+GitHub Actions (`.github/workflows/tests.yml`).
+
+
 ## Outlook/TODO
 
 - [ ] Finish the documentation
@@ -94,4 +123,3 @@ This will currently generate 5 warnings, which are not critical.
 - [ ] Add phase plot to the analysis
 - [ ] Add DG analysis option (online/offline)
 - [ ] Add whole folder analysis option
-- [ ] **Add automated testing**

@@ -25,6 +25,13 @@ __pycache__/
 .mypy_cache/
 
 
+# testing
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+
 # sphinx
 docs/build/
 docs/source/_autosummary/

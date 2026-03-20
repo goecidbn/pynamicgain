@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "PynamicGain"
-version = "0.1.0"
+version = "0.1.1"
 requires-python = ">=3.11"
 dependencies = [
   "pandas",
@@ -52,6 +52,7 @@ pydg_new_setup = "pynamicgain.new_setup:initiate_new_setup"
 pydg_generate = "pynamicgain.__main__:generate"
 pydg_generate_analyse = "pynamicgain.__main__:generate_analyse"
 pydg_analyse = "pynamicgain.__main__:analyse"
+pydg_backup_csv = "pynamicgain.__main__:backup_seed_csv"
 pydg_help = "pynamicgain.__main__:help"
 
 

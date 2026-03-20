@@ -198,22 +198,33 @@ class SeedManager:
     # Internal helpers
     # ------------------------------------------------------------------
 
-    def _backup_csv(self) -> None:
-        """Create a backup copy of the seed CSV before modifying it.
+    def backup_csv(self) -> str:
+        """Create a backup copy of the seed CSV.
 
         The backup is written to the same directory as the original with
-        a ``.bak`` suffix.  If the backup cannot be created the commit
-        still proceeds — losing the safety net is preferable to blocking
-        data acquisition.
+        a ``.bak`` suffix.  When called from :meth:`commit` a failure is
+        non-fatal (a warning is logged and the commit proceeds).  When
+        called directly the exception propagates so the caller can
+        handle it.
 
-        The backup is a simple copy (not atomic) because the original
-        file is only ever appended to, so a partial copy is still a
-        valid prefix of the original.
+        Returns:
+            The absolute path to the backup file.
+
+        Raises:
+            OSError: If the backup file cannot be written.
+
+        .. versionadded:: 0.1.0
         """
         backup_path = self._seed_csv + '.bak'
+        shutil.copy2(self._seed_csv, backup_path)
+        logger.info("Backed up seed CSV to '%s'.", backup_path)
+        return backup_path
+
+    # keep the internal wrapper used by commit() ---
+    def _backup_csv(self) -> None:
+        """Best-effort backup called automatically by :meth:`commit`."""
         try:
-            shutil.copy2(self._seed_csv, backup_path)
-            logger.debug("Backed up seed CSV to '%s'.", backup_path)
+            self.backup_csv()
         except OSError as e:
             logger.warning(
                 "Could not back up seed CSV '%s': %s. "
